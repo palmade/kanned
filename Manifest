@@ -1,0 +1,7 @@
+CHANGELOG
+README.rdoc
+Rakefile
+bin/kanned
+lib/palmade/kanned.rb
+spec/spec_helper.rb
+Manifest

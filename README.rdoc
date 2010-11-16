@@ -1,0 +1,8 @@
+== Overview
+
+This is a Kannel VAS gateway that receives SMS messages from a Kannel SMSbox and stores it to a rabbit-mq server. Also listens for new messages to send via rabbit-mq and sends it back to the Kannel SMSbox instance.
+
+== Status
+
+Super, duper in development. Not useable at all. I don't even know why you're even reading this.
+
