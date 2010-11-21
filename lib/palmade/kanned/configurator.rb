@@ -6,10 +6,14 @@ module Palmade::Kanned
 
     def initialize
       @init = nil
+      @configured = false
+      @finalized = false
     end
 
     def configure(&block)
       self.instance_eval(&block)
+      finalize unless @finalized
+
       self
     end
 
@@ -17,14 +21,28 @@ module Palmade::Kanned
       @init = Init.init(root_path, env)
     end
 
-    def configure(config_path = nil)
+    def config(config_path = nil)
       init_required
+      @configured = true
       @init.configure(config_path)
     end
 
     def set_logger(l)
       init_required
       @init.set_logger(l)
+    end
+
+    def set_route(gw_k, route_opts = { })
+      init_required
+      @init.set_route(gw_k, route_opts)
+    end
+
+    def finalize
+      init_required
+      config unless @configured
+
+      @finalized = true
+      @init.finalize
     end
 
     protected
