@@ -1,3 +1,5 @@
+require 'yaml'
+
 module Palmade::Kanned
   class Config
     attr_reader :config

@@ -1,0 +1,35 @@
+gateways:
+  # receives and sends sms via HTTP
+  # [POST] /kanndee/smsbox
+  # [POST] /kanndee/mbuni
+  # [POST] /kanndee/twilio
+  spec:
+    adapters: [ smsbox, mbuni, twilio ]
+    secret: xxx
+    smsbox:
+      send_url: http://127.0.0.1:13001/cgi-bin/sendsms
+      username: xxx
+      password: xxx
+    mbuni:
+      send_url: http://127.0.0.1:12001/cgi-bin/sendmms
+      username: xxx
+      password: xxx
+    twilio:
+      account_sid: xxx
+      auth_token: xxx
+
+  # connects to gammu db directly, perhaps?
+  # gammu:
+  #   adapter: gammu
+
+  # [POST] /twilio/incoming
+  # twilio:
+  #   adapter: twilio
+  #   api_key: xxx
+  #   secret: xxx
+
+  # [POST] /clickatell/incoming
+  # clickatell:
+  #   adapter: clickatell
+  #   api_key: xxxx
+  #   secret: xxx
