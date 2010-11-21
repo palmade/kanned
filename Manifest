@@ -1,7 +1,12 @@
 CHANGELOG
+Manifest
 README.rdoc
 Rakefile
 bin/kanned
 lib/palmade/kanned.rb
+lib/palmade/kanned/app.rb
+lib/palmade/kanned/configurator.rb
+lib/palmade/kanned/controller.rb
+lib/palmade/kanned/init.rb
+lib/palmade/kanned/middleware.rb
 spec/spec_helper.rb
-Manifest

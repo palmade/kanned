@@ -1,2 +1,6 @@
 #!/usr/bin/env ruby
 
+# TODO: Support loading via gem
+require File.expand_path('../../lib/palmade/kanned', __FILE__)
+
+Palmade::Kanned.runner(ARGV)

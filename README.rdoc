@@ -6,3 +6,8 @@ This is a Kannel VAS gateway that receives SMS messages from a Kannel SMSbox and
 
 Super, duper in development. Not useable at all. I don't even know why you're even reading this.
 
+== TODO
+
+* Parse config/kanned.yml
+* Rack middleware to handle gateways defined in config/kanned.yml
+* Mapping of gateways to classes
