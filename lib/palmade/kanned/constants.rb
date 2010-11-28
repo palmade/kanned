@@ -15,8 +15,7 @@ module Palmade::Kanned
     CHTTP_USER_AGENT = "HTTP_USER_AGENT".freeze
 
     CContentType = "Content-Type".freeze
-    CCTtext_plain = "text/plain".freeze
-    CFailWhale = "Fail Whale".freeze
+    CCTtext_plain = "text/plain; charset=utf-8".freeze
 
     CKANNED_GATEWAY_PATH = "KANNED_GATEWAY_PATH".freeze
     CKANNED_GATEWAY_KEY = "KANNED_GATEWAY_KEY".freeze
@@ -26,12 +25,22 @@ module Palmade::Kanned
     CSENDER_NUMBER = "SENDER_NUMBER".freeze
     CRECIPIENT_NUMBER = "RECIPIENT_NUMBER".freeze
     CRECIPIENT_ID = "RECIPIENT_ID".freeze
-    CRECEIVED_AT = "RECIEVED_AT".freeze
+    CRECEIVED_AT = "RECEIVED_AT".freeze
     CMESSAGE = "MESSAGE".freeze
     CSUBJECT = "SUBJECT".freeze
     CUSER_AGENT = "USER_AGENT".freeze
     CREQUESTED_AT = "REQUESTED_AT".freeze
 
     CEncBINARY = Encoding.find('BINARY')
+
+    CFailWhale = "Fail Whale".force_encoding('UTF-8').freeze
+    CEmptyBody = "".force_encoding('UTF-8').freeze
+
+    Clogtimestamp = "%Y-%m-%d %H:%M:%S".freeze
+    Clogprocessingformat = ("\n\nProcessing %s %s (for %s at %s)\n" +
+                            "  SMS from %s to %s %s\n" +
+                            "    %s").freeze
+    Clogcompletedformat = ("Completed in %.5f (%s reqs/sec) | %s [ %s %s ]").freeze
+    Clognotperformed = "!performed".freeze
   end
 end

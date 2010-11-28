@@ -1,4 +1,5 @@
 require 'logger'
+require 'benchmark'
 
 KANNED_LIB_DIR = File.expand_path(File.dirname(__FILE__))
 
@@ -21,6 +22,7 @@ module Palmade
     class ConfigError < KannedError; end
     class UnknownAdapter < KannedError; end
     class NotImplemented < KannedError; end
+    class MalformedRequest < KannedError; end
 
     def self.init; @@init; end
     def self.init=(i); @@init = i; end

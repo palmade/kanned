@@ -60,11 +60,24 @@ module Palmade::Kanned
 
       # called when processing web requests (aka receiving sms)
       def parse_request(env, path_params)
+        validate_request!(env, path_params)
         msg_hash = parse_message_hash(env, path_params)
+
         [ msg_hash, env, path_params ]
       end
 
       protected
+
+      def validate_request!(env, path_params)
+        [ CHTTP_X_KANNEL_FROM,
+          CHTTP_X_KANNEL_TO,
+          CHTTP_X_KANNEL_SMSC,
+          CHTTP_X_KANNEL_TIME ].each do |k|
+          if !env.include?(k) || env[k].empty?
+            raise MalformedRequest, "Invalid header value for #{k} #{env[k]}"
+          end
+        end
+      end
 
       def parse_message_hash(env, path_params)
         msg_hash = empty_message_hash

@@ -1,5 +1,7 @@
 module Palmade::Kanned
   class Controller
+    include Constants
+
     attr_reader :gateway
     attr_reader :message
     attr_reader :env
@@ -36,20 +38,23 @@ module Palmade::Kanned
       @env = env
       @path_params = path_params
 
-      # process shortcode
-      unless performed?
-        perform_shortcodes
-      end
-
       # process commands
       unless performed?
         perform_commands
+      end
+
+      # process shortcode
+      unless performed?
+        perform_shortcodes
       end
 
       # process catch-all message handler
       unless performed?
         perform_message
       end
+
+      # by default, we mark it as performed, whatever the response.
+      performed!
 
       return_response
     end
@@ -62,6 +67,12 @@ module Palmade::Kanned
 
     def return_response
       response = nil
+
+      unless @reply.nil?
+        response = [ 200, { CContentType => CCTtext_plain }, @reply ]
+      else
+        response = [ 200, { CContentType => CCTtext_plain }, CEmptyBody ]
+      end
 
       [ performed?, response ]
     end
