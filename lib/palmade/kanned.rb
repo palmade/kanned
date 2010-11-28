@@ -1,7 +1,10 @@
+require 'logger'
+
 KANNED_LIB_DIR = File.expand_path(File.dirname(__FILE__))
 
 module Palmade
   module Kanned
+    autoload :Constants, File.join(KANNED_LIB_DIR, 'kanned/constants')
     autoload :Init, File.join(KANNED_LIB_DIR, 'kanned/init')
     autoload :Config, File.join(KANNED_LIB_DIR, 'kanned/config')
     autoload :Configurator, File.join(KANNED_LIB_DIR, 'kanned/configurator')
@@ -12,6 +15,12 @@ module Palmade
 
     autoload :Gateway, File.join(KANNED_LIB_DIR, 'kanned/gateway')
     autoload :Controller, File.join(KANNED_LIB_DIR, 'kanned/controller')
+    autoload :Message, File.join(KANNED_LIB_DIR, 'kanned/message')
+
+    class KannedError < StandardError; end
+    class ConfigError < KannedError; end
+    class UnknownAdapter < KannedError; end
+    class NotImplemented < KannedError; end
 
     def self.init; @@init; end
     def self.init=(i); @@init = i; end

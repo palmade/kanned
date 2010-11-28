@@ -1,6 +1,6 @@
 module Palmade::Kanned
   module Adapters
-    class Twilio
+    class Twilio < Base
     end
   end
 end

@@ -1,6 +1,7 @@
 module Palmade::Kanned
-  module Adapters
-    class Mbuni < Base
+  class Controller
+    module Messages
+
     end
   end
 end

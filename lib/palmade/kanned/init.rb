@@ -17,6 +17,7 @@ module Palmade::Kanned
       @env = env
       @logger = nil
       @config = nil
+
       @routes = { }
       @gateways = { }
     end
@@ -42,7 +43,10 @@ module Palmade::Kanned
       unless @routes.empty?
         @routes.each do |gw_k, gw_opts|
           if @config.gateways.include?(gw_k)
-            @gateways[gw_k] = Gateway.new(gw_k, gw_opts, @config.gateways[gw_k])
+            @gateways[gw_k] = Gateway.create(self,
+                                             gw_k,
+                                             gw_opts,
+                                             @config.gateways[gw_k])
           else
             raise "Found no configuration for route #{gw_k}"
           end

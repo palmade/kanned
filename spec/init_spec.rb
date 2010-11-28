@@ -56,6 +56,10 @@ context "init" do
       @config["twilio"].should_not be_nil
     end
 
+    it "should have the correct url_prefix" do
+      @gw.url_prefix.should == "/#{@gw.gateway_key}"
+    end
+
     after(:all) do
 
     end
