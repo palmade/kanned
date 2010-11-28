@@ -7,6 +7,7 @@ module Palmade
     autoload :Configurator, File.join(KANNED_LIB_DIR, 'kanned/configurator')
 
     autoload :Middleware, File.join(KANNED_LIB_DIR, 'kanned/middleware')
+    autoload :Adapters, File.join(KANNED_LIB_DIR, 'kanned/adapters')
     autoload :App, File.join(KANNED_LIB_DIR, 'kanned/app')
 
     autoload :Gateway, File.join(KANNED_LIB_DIR, 'kanned/gateway')

@@ -3,7 +3,7 @@ gateways:
   # [POST] /kanndee/smsbox
   # [POST] /kanndee/mbuni
   # [POST] /kanndee/twilio
-  spec:
+  test:
     adapters: [ smsbox, mbuni, twilio ]
     secret: xxx
     smsbox:
