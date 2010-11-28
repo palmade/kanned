@@ -30,12 +30,12 @@ module Palmade::Kanned
       @msg_hash[CRECIPIENT_ID]
     end
 
-    def message
-      @msg_hash[CMESSAGE]
-    end
-
     def recieved_at
       @msg_hash[RECEIVED_AT]
+    end
+
+    def message
+      @msg_hash[CMESSAGE]
     end
   end
 end

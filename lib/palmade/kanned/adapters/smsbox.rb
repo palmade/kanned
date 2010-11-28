@@ -1,3 +1,5 @@
+# -*- encoding: binary -*-
+#
 # Adapter for Kannel's smsbox daemon (http request)
 #
 #
@@ -61,9 +63,7 @@ module Palmade::Kanned
       # called when processing web requests (aka receiving sms)
       def parse_request(env, path_params)
         validate_request!(env, path_params)
-        msg_hash = parse_message_hash(env, path_params)
-
-        [ msg_hash, env, path_params ]
+        parse_message_hash(env, path_params)
       end
 
       protected
@@ -79,22 +79,41 @@ module Palmade::Kanned
         end
       end
 
+      Cslash = '/'.freeze
+      Ccoding0 = '0'.freeze
+      Ccoding1 = '1'.freeze
+      Ccoding2 = '2'.freeze
       def parse_message_hash(env, path_params)
         msg_hash = empty_message_hash
 
-        msg_hash[CSENDER_NUMBER] = env[CHTTP_X_KANNEL_FROM]
-        msg_hash[CRECIPIENT_NUMBER] = env[CHTTP_X_KANNEL_TO]
-        msg_hash[CRECIPIENT_ID] = env[CHTTP_X_KANNEL_SMSC]
-        msg_hash[CRECEIVED_AT] = Time.parse(env[CHTTP_X_KANNEL_TIME]).utc
+        msg_hash[CMESSAGE_ID], *rest = path_params.split(Cslash, 2)
+        msg_hash[CMESSAGE_ID].freeze
+
+        msg_hash[CSENDER_NUMBER] = env[CHTTP_X_KANNEL_FROM].dup.freeze
+        msg_hash[CRECIPIENT_NUMBER] = env[CHTTP_X_KANNEL_TO].dup.freeze
+        msg_hash[CRECIPIENT_ID] = env[CHTTP_X_KANNEL_SMSC].dup.freeze
+        msg_hash[CRECEIVED_AT] = Time.parse(env[CHTTP_X_KANNEL_TIME]).utc.freeze
 
         bd = env[Crack_input]
         bd.rewind
-        msg_hash[CMESSAGE] = bd.read.force_encoding(CEncBINARY)
 
-        msg_hash[CREMOTE_ADDR] = env[CREMOTE_ADDR]
-        msg_hash[CUSER_AGENT] = env[CHTTP_USER_AGENT]
-        msg_hash[CREQUESTED_AT] = Time.now.utc
-        msg_hash[CQUERY_STRING] = env[CQUERY_STRING]
+        case coding = env[CHTTP_X_KANNEL_CODING]
+        when Ccoding0
+          msg_hash[CMESSAGE] = bd.read.force_encoding(CEncUTF8).freeze
+        when Ccoding1
+          msg_hash[CMESSAGE] = bd.read.force_encoding(CEncBINARY).freeze
+        when Ccoding2
+          msg_hash[CMESSAGE] = bd.read.force_encoding(CEncUTF16BE).encode(CEncUTF8).freeze
+        else
+          raise UnsupportedEncoding, "Unsupported encoding #{coding}"
+        end
+
+        bd.rewind
+
+        msg_hash[CREMOTE_ADDR] = env[CREMOTE_ADDR].dup.freeze
+        msg_hash[CUSER_AGENT] = env[CHTTP_USER_AGENT].dup.freeze
+        msg_hash[CREQUESTED_AT] = Time.now.utc.freeze
+        msg_hash[CQUERY_STRING] = env[CQUERY_STRING].dup.freeze
 
         msg_hash[CKANNED_GATEWAY_PATH] = env[CKANNED_GATEWAY_PATH]
         msg_hash[CKANNED_GATEWAY_KEY] = env[CKANNED_GATEWAY_KEY]
@@ -102,7 +121,7 @@ module Palmade::Kanned
         msg_hash[CKANNED_PATH_PARAMS] = env[CKANNED_PATH_PARAMS]
 
         # return message hash
-        msg_hash
+        [ msg_hash, env, path_params ]
       end
     end
   end

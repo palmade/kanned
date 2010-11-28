@@ -56,10 +56,10 @@ module Palmade::Kanned
               adapter_key = $~[1]
               path_params = $~[2]
 
-              env[CKANNED_GATEWAY_PATH] = gw_r[0]
-              env[CKANNED_GATEWAY_KEY] = gw_r[2]
-              env[CKANNED_ADAPTER_KEY] = adapter_key
-              env[CKANNED_PATH_PARAMS] = path_params
+              env[CKANNED_GATEWAY_PATH] = gw_r[0].dup.freeze
+              env[CKANNED_GATEWAY_KEY] = gw_r[2].dup.freeze
+              env[CKANNED_ADAPTER_KEY] = adapter_key.freeze
+              env[CKANNED_PATH_PARAMS] = path_params.freeze
 
               gw = gateways[gw_r[2]]
               msg_hash, env, path_params = gw.adapter(adapter_key).
@@ -80,6 +80,7 @@ module Palmade::Kanned
 
     Clognewlineregex = /\n/.freeze
     Clognewlinespacing = "\n    ".freeze
+    Clognotperformed = "!performed".freeze
     def benchmark_and_log(gw, msg_hash, env, &block)
       rt = nil; ret = [ false, nil ]
 
@@ -100,17 +101,13 @@ module Palmade::Kanned
                           message)
 
       rt = [ Benchmark.measure { ret = yield }.real, 0.0001 ].max
-    ensure
-      unless rt.nil?
-        logger.info sprintf(Clogcompletedformat,
-                            rt,
-                            (1 / rt).floor,
-                            ret[0] ? ret[1][0] : Clognotperformed,
-                            request.request_method.to_s.upcase,
-                            request.path)
-      end
 
-      return ret
+      logger.info sprintf(Clogcompletedformat,
+                          rt,
+                          (1 / rt).floor,
+                          ret[0] ? ret[1][0] : Clognotperformed,
+                          request.request_method.to_s.upcase,
+                          request.path)
     end
 
     def build_gateway_routes!

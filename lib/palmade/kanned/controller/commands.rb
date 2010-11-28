@@ -4,7 +4,7 @@ module Palmade::Kanned
       protected
 
       def perform_commands
-
+        msg = message.message
       end
     end
   end

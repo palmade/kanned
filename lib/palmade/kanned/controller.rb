@@ -9,11 +9,11 @@ module Palmade::Kanned
 
     attr_reader :logger
 
-    autoload :Shortcodes, File.join(KANNED_LIB_DIR, 'kanned/controller/shortcodes')
-    include Shortcodes
-
     autoload :Commands, File.join(KANNED_LIB_DIR, 'kanned/controller/commands')
     include Commands
+
+    autoload :Shortcodes, File.join(KANNED_LIB_DIR, 'kanned/controller/shortcodes')
+    include Shortcodes
 
     autoload :Messages, File.join(KANNED_LIB_DIR, 'kanned/controller/messages')
     include Messages
@@ -66,8 +66,6 @@ module Palmade::Kanned
     protected
 
     def return_response
-      response = nil
-
       unless @reply.nil?
         response = [ 200, { CContentType => CCTtext_plain }, @reply ]
       else
@@ -79,6 +77,10 @@ module Palmade::Kanned
 
     def reply(msg)
       @reply = msg
+    end
+
+    def no_reply!
+      @reply = nil
     end
   end
 end

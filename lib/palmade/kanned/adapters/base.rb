@@ -11,6 +11,8 @@ module Palmade::Kanned
 
       # == SAMPLE MESSAGE hash after being parsed by an adapter
       DEFAULT_MESSAGE_HASH = {
+        CMESSAGE_ID => nil,
+
         # == Message details
         CSENDER_NUMBER => nil, # "+631231234567"
         CRECIPIENT_NUMBER => nil, # "+631231234567"
