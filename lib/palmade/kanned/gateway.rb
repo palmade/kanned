@@ -3,7 +3,7 @@
 module Palmade::Kanned
   class Gateway
     DEFAULT_OPTIONS = {
-
+      :cache_classes => true
     }
 
     attr_reader :gateway_key
@@ -51,7 +51,7 @@ module Palmade::Kanned
     protected
 
     def controller_klass
-      if @controller_klass.nil?
+      if !@options[:cache_classes] || @controller_klass.nil?
         controller_name = @options[:class_name]
         unless controller_name.nil?
           @controller_klass = eval(controller_name, TOPLEVEL_BINDING)

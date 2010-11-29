@@ -120,7 +120,7 @@ module Palmade::Kanned
     end
 
     def fail!
-      [ 500, { CContentType => CCTtext_plain }, CFailWhale ]
+      [ 500, { CContentType => CCTtext_plain }, [ CFailWhale ] ]
     end
   end
 end

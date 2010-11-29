@@ -71,9 +71,9 @@ module Palmade::Kanned
 
     def return_response
       unless @reply.nil?
-        response = [ 200, { CContentType => CCTtext_plain }, @reply ]
+        response = [ 200, { CContentType => CCTtext_plain }, [ @reply ] ]
       else
-        response = [ 200, { CContentType => CCTtext_plain }, CEmptyBody ]
+        response = [ 200, { CContentType => CCTtext_plain }, [ CEmptyBody ] ]
       end
 
       [ performed?, response ]
