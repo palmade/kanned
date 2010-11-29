@@ -8,6 +8,15 @@ module Palmade::Kanned
       class CommandMethodAlreadyDefined < KannedError; end
       class CommandKeyInvalid < KannedError; end
 
+      class UnknownCommandKey < KannedError
+        attr_reader :cmd_key
+
+        def initialize(cmd_key)
+          super "Unknown command key #{cmd_key}"
+          @cmd_key = cmd_key
+        end
+      end
+
       DEFAULT_OPTIONS = {
 
       }
@@ -25,11 +34,16 @@ module Palmade::Kanned
       GENERIC_COMMAND_REGEXP_MATCHER = '\A\s*\/(%s)(\s+(.*))?\Z'.freeze
 
       COMMAND_REGEXP_MATCHER = /\A\s*\/(#{ALLOWED_KEY_CHARS}*)(\s+(.*))?\Z/m.freeze
-      SHORTCODE_3CHARS_MATCHER = /\A\s*(#{ALLOWED_KEY_CHARS}{2})(\s+(.*))?\Z/m.freeze
-      SHORTCODE_4CHARS_MATCHER = /\A\s*(#{ALLOWED_KEY_CHARS}{3})(\s+(.*))?\Z/m.freeze
+      SHORTCODE_CHARS_MATCHER = /\A\s*(#{ALLOWED_KEY_CHARS}{2,3})(\s+(.*))?\Z/m.freeze
       SHORTCODE_NCHARS_MATCHER = /\A\s*(#{ALLOWED_KEY_CHARS}*)(\s+(.*))?\Z/m.freeze
 
       module ClassMethods
+        protected
+
+        def allow_nchars_shortcodes!
+          self.text_shortcodes_matcher = SHORTCODE_NCHARS_MATCHER
+        end
+
         def command(cmd_key, *args, &block)
           _add_command(:command, cmd_key, *args, &block)
         end
@@ -37,8 +51,6 @@ module Palmade::Kanned
         def shortcode(code_key, *args, &block)
           _add_command(:shortcode, code_key, *args, &block)
         end
-
-        protected
 
         def _add_command(cmd_type, cmd_key, *args, &block)
           case cmd_type
@@ -77,24 +89,32 @@ module Palmade::Kanned
               cmd_method = "_#{cmd_type}_#{cmd_key}".to_sym
 
               if methods.include?(cmd_method)
-                raise CommandMethodAlreadyDefined, "Command method #{cmd_method} for #{cmd_key} already defined. Please specify a different one."
+                raise(CommandMethodAlreadyDefined,
+                      "Command method #{cmd_method} for #{cmd_key} already defined. Please specify a different one.")
               end
 
               define_method(cmd_method, &block)
               protected(cmd_method)
             else
-              cmd_method = args.first.to_sym
+              if args.first.nil?
+                cmd_method = cmd_key.to_sym
+              else
+                cmd_method = args.first.to_sym
+              end
             end
 
             if cmd_method.nil?
-              raise CommandMethodNotDefined, "Command method for #{cmd_key} not defined. Either provide a block or a method name"
+              raise(CommandMethodNotDefined,
+                    "Command method for #{cmd_key} not defined. Either provide a block or a method name.")
             end
 
             case cmd_type
             when :shortcode
-              cmd_data[1] = Regexp.new(sprintf(GENERIC_SHORTCODE_REGEXP_MATCHER, cmd_key), Regexp::MULTILINE).freeze
+              cmd_data[1] = Regexp.new(sprintf(GENERIC_SHORTCODE_REGEXP_MATCHER, cmd_key),
+                                       Regexp::MULTILINE).freeze
             when :command
-              cmd_data[1] = Regexp.new(sprintf(GENERIC_COMMAND_REGEXP_MATCHER, cmd_key), Regexp::MULTILINE).freeze
+              cmd_data[1] = Regexp.new(sprintf(GENERIC_COMMAND_REGEXP_MATCHER, cmd_key),
+                                       Regexp::MULTILINE).freeze
             end
 
             cmd_data[2] = cmd_method.freeze
@@ -102,7 +122,8 @@ module Palmade::Kanned
 
             command_list[cmd_key] = cmd_data
           else
-            raise CommandAlreadyDefined, "Command #{cmd_key} already defined in #{cmd_type}"
+            raise(CommandAlreadyDefined,
+                  "Command #{cmd_key} already defined in #{cmd_type}")
           end
         end
       end
@@ -113,10 +134,22 @@ module Palmade::Kanned
         class << base
           attr_accessor :text_commands
           attr_accessor :text_shortcodes
+          attr_accessor :text_shortcodes_matcher
         end
 
         base.class_eval do
           protected
+
+          attr_reader :cmd_key
+          attr_reader :cmd_params
+
+          def cmd_shortcode?
+            defined?(@cmd_shortcode) && @cmd_shortcode
+          end
+
+          def cmd_shortcode!
+            @cmd_shortcode = true
+          end
 
           def text_commands
             self.class.text_commands
@@ -131,7 +164,68 @@ module Palmade::Kanned
       protected
 
       def perform_commands_and_shortcodes
+        cmd_meth = nil
+
+        # first, parse commands, 2nd try shortcodes
+        unless text_commands.nil? || text_commands.empty?
+          cmd_meth = parse_commands
+        end
+
+        unless !cmd_meth.nil? || text_shortcodes.nil? || text_shortcodes.empty?
+          cmd_meth = parse_shortcodes
+        end
+
+        unless cmd_meth.nil?
+          send(cmd_meth)
+
+          # let's mark it performed, unless explicitly set
+          performed! unless performed?
+        end
+      end
+
+      def parse_commands
         msg = message.message
+
+        if msg =~ COMMAND_REGEXP_MATCHER
+          cmd_key = $~[1].downcase
+          cmd_params = $~[2]
+
+          if text_commands.include?(cmd_key)
+            cmd_data = text_commands[cmd_key]
+
+            @cmd_key = cmd_key.freeze
+            @cmd_params = cmd_params.freeze
+
+            # let's return the cmd_method
+            cmd_data[2]
+          else
+            raise UnknownCommandKey, cmd_key
+          end
+        end
+      end
+
+      def parse_shortcodes
+        msg = message.message
+
+        shortcode_regexp = self.class.text_shortcodes_matcher || SHORTCODE_CHARS_MATCHER
+
+        if msg =~ SHORTCODE_CHARS_MATCHER
+          cmd_key = $~[1].downcase
+          cmd_params = $~[2]
+
+          if text_shortcodes.include?(cmd_key)
+            cmd_data = text_shortcodes[cmd_key]
+
+            @cmd_key = cmd_key.freeze
+            @cmd_params = cmd_params.freeze
+            self.cmd_shortcode!
+
+            # let's return the cmd_method
+            cmd_data[2]
+          else
+            nil
+          end
+        end
       end
     end
   end

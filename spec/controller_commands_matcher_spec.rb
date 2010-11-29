@@ -89,8 +89,8 @@ context "controller" do
       end
     end
 
-    it "should match 3chars shortcodes" do
-      regex = Palmade::Kanned::Controller::SHORTCODE_3CHARS_MATCHER
+    it "should match 3 chars shortcodes" do
+      regex = Palmade::Kanned::Controller::SHORTCODE_CHARS_MATCHER
 
       [ "abc",
         "abc world",
@@ -109,9 +109,52 @@ context "controller" do
       end
     end
 
-    it "should match 4chars shortcodes" do
-      regex = Palmade::Kanned::Controller::SHORTCODE_4CHARS_MATCHER
+    it "should match 4 chars shortcodes" do
+      regex = Palmade::Kanned::Controller::SHORTCODE_CHARS_MATCHER
 
+      [ "abcd",
+        "abcd world",
+        "  abcd world",
+        "abcd world  ",
+        "abcd     world ",
+        "\nabcd world\n",
+        "\t\nabcd world\t\nworld",
+        "ABCd world",
+        "aBcD world",
+        "Abcd world",
+        "aBCD world"
+      ].each do |t|
+        t.should =~ regex
+        t =~ regex; $~[1].downcase.should == "abcd"
+      end
+    end
+
+    it "should not match 3-4 chars shortcodes" do
+      regex = Palmade::Kanned::Controller::SHORTCODE_CHARS_MATCHER
+
+      [ "abcde",
+        "abc.",
+        " abcde",
+        "abcde  world",
+        " abcdee  ",
+        " abcde worldee",
+        "    \tabcde world \t",
+        "abc;",
+        "abc$ world",
+        "ab",
+        "\nab world\n",
+        "ab world",
+        "a world",
+        ". world test"
+      ].each do |t|
+        t.should_not =~ regex
+      end
+    end
+
+    it "should match n chars shortcodes" do
+      regex = Palmade::Kanned::Controller::SHORTCODE_NCHARS_MATCHER
+
+      # TODO:
     end
 
     after(:all) do

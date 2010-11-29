@@ -19,6 +19,7 @@ module Palmade::Kanned
 
     def performed?; @performed; end
     def performed!; @performed = true; end
+    def throw_performed!; throw(:performed); end
 
     def self.perform(gw, msg_hash, env, path_params)
       self.new(gw).perform(msg_hash, env, path_params)
@@ -39,17 +40,26 @@ module Palmade::Kanned
 
       # process commands and shortcodes
       unless performed?
-        perform_commands_and_shortcodes
+        catch(:performed) do
+          perform_commands_and_shortcodes
+        end
       end
 
       # process catch-all message handler
       unless performed?
-        perform_message
+        catch(:performed) do
+          perform_message
+        end
       end
 
       # by default, we mark it as performed, whatever the response.
-      performed!
+      performed! unless performed?
 
+      return_response
+    rescue Commands::UnknownCommandKey => e
+      logger.warn { "  Perform command: Invalid command #{e.cmd_key}" }
+
+      reply_final! "Invalid command #{e.cmd_key}"
       return_response
     end
 
@@ -75,6 +85,11 @@ module Palmade::Kanned
 
     def reply_nothing!
       @reply = nil
+    end
+
+    def reply_final!(msg)
+      performed!
+      reply(msg)
     end
   end
 end

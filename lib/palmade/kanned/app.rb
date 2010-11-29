@@ -32,8 +32,8 @@ module Palmade::Kanned
 
     rescue Exception => e
       tm = Time.now.strftime(Clogtimestamp)
-      logger.error "[#{tm}] #{e.class.name} #{e.message}\n\t" +
-        e.backtrace.join("\n\t") + "\n\n"
+      logger.error { "[#{tm}] #{e.class.name} #{e.message}\n\t" +
+        e.backtrace.join("\n\t") + "\n\n" }
 
       return fail!
     end
@@ -90,24 +90,24 @@ module Palmade::Kanned
       message = msg_hash[CMESSAGE][0,60].
         split(Clognewlineregex).join(Clognewlinespacing)
 
-      logger.info sprintf(Clogprocessingformat,
-                          request.request_method.to_s.upcase,
-                          request.path,
-                          request.ip,
-                          tm,
-                          msg_hash[CSENDER_NUMBER],
-                          msg_hash[CRECIPIENT_NUMBER],
-                          msg_hash[CRECIPIENT_ID],
-                          message)
+      logger.info { sprintf(Clogprocessingformat,
+                            request.request_method.to_s.upcase,
+                            request.path,
+                            request.ip,
+                            tm,
+                            msg_hash[CSENDER_NUMBER],
+                            msg_hash[CRECIPIENT_NUMBER],
+                            msg_hash[CRECIPIENT_ID],
+                            message) }
 
       rt = [ Benchmark.measure { ret = yield }.real, 0.0001 ].max
 
-      logger.info sprintf(Clogcompletedformat,
-                          rt,
-                          (1 / rt).floor,
-                          ret[0] ? ret[1][0] : Clognotperformed,
-                          request.request_method.to_s.upcase,
-                          request.path)
+      logger.info { sprintf(Clogcompletedformat,
+                            rt,
+                            (1 / rt).floor,
+                            ret[0] ? ret[1][0] : Clognotperformed,
+                            request.request_method.to_s.upcase,
+                            request.path) }
     end
 
     def build_gateway_routes!
