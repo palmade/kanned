@@ -14,9 +14,6 @@ module Palmade::Kanned
     autoload :Commands, File.join(KANNED_LIB_DIR, 'kanned/controller/commands')
     include Commands
 
-    autoload :Shortcodes, File.join(KANNED_LIB_DIR, 'kanned/controller/shortcodes')
-    include Shortcodes
-
     autoload :Messages, File.join(KANNED_LIB_DIR, 'kanned/controller/messages')
     include Messages
 
@@ -40,14 +37,9 @@ module Palmade::Kanned
       @env = env
       @path_params = path_params
 
-      # process commands
+      # process commands and shortcodes
       unless performed?
-        perform_commands
-      end
-
-      # process shortcode
-      unless performed?
-        perform_shortcodes
+        perform_commands_and_shortcodes
       end
 
       # process catch-all message handler
