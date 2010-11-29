@@ -87,7 +87,7 @@ module Palmade::Kanned
       tm = Time.now.strftime(Clogtimestamp)
       request = Rack::Request.new(env)
 
-      message = msg_hash[CMESSAGE][0,60].
+      message = msg_hash[CMESSAGE][0,70].
         split(Clognewlineregex).join(Clognewlinespacing)
 
       logger.info { sprintf(Clogprocessingformat,

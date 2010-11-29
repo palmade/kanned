@@ -30,6 +30,8 @@ module Palmade::Kanned
       @logger = gateway.logger
 
       @reply = nil
+      @reply_code = 200
+
       @performed = false
     end
 
@@ -69,27 +71,39 @@ module Palmade::Kanned
 
     protected
 
+    # == Note, support for other types of response.
+    #
+    # NOTE: Replying here is assumed to be just plain/text which the gateway uses
+    # to parse, as a reply SMS. Twilio/Clickatell might need to use a different,
+    # reply. This needs to be implemented.
+    #
     def return_response
       unless @reply.nil?
-        response = [ 200, { CContentType => CCTtext_plain }, [ @reply ] ]
+        response = [ @reply_code, { CContentType => CCTtext_plain }, [ @reply ] ]
       else
-        response = [ 200, { CContentType => CCTtext_plain }, [ CEmptyBody ] ]
+        response = [ @reply_code, { CContentType => CCTtext_plain }, [ CEmptyBody ] ]
       end
 
       [ performed?, response ]
     end
 
-    def reply(msg)
+    def reply(msg, reply_code = 200)
       @reply = msg
+      @reply_code = reply_code
     end
 
     def reply_nothing!
       @reply = nil
     end
 
-    def reply_final!(msg)
+    def reply_final!(msg, reply_code = 200)
       performed!
-      reply(msg)
+      reply(msg, reply_code)
+    end
+
+    def error_exception(e)
+      msg = "#{e.class.name}: #{e.message}"
+      logger.error { "#{msg}\n\t#{e.backtrace.join("\n\t")}\n\n" }; msg
     end
   end
 end
