@@ -73,7 +73,7 @@ module Palmade::Kanned
       @reply = msg
     end
 
-    def no_reply!
+    def reply_nothing!
       @reply = nil
     end
   end

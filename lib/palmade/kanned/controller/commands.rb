@@ -12,13 +12,22 @@ module Palmade::Kanned
 
       }
 
-      # starts with a letter (any case) and can continue numbers afterwards
-      ALLOWED_COMMAND_KEYS = /\A[a-zA-Z][a-zA-Z0-9]*\Z/.freeze
+      # NOTES: The following matchers below, can be different
+      # if matching non US-ASCII characters. Such as those
+      # found in Japanese or Korean charsets.
 
-      COMMAND_REGEXP_MATCHER = /\A\/([a-zA-Z][a-zA-Z0-9]*)(\s+(.*))?\Z/m.freeze
-      SHORTCODE_3CHARS_MATCHER = /\A([a-zA-Z][a-zA-Z0-9]{0,2})(\s+(.*))?\Z/m.freeze
-      SHORTCODE_4CHARS_MATCHER = /\A([a-zA-Z][a-zA-Z0-9]{0,3})(\s+(.*))?\Z/m.freeze
-      SHORTCODE_NCHARS_MATCHER = /\A([a-zA-Z][a-zA-Z0-9]*)(\s+(.*))?\Z/m.freeze
+      # starts with a letter (any case) and can continue with
+      # numbers afterwards, with at least 1 character
+      ALLOWED_KEY_CHARS = '[a-zA-Z][a-zA-Z0-9]'.freeze
+      ALLOWED_COMMAND_KEYS = /\A#{ALLOWED_KEY_CHARS}*\Z/.freeze
+
+      GENERIC_SHORTCODE_REGEXP_MATCHER = '\A\s*(%s)(\s+(.*))?\Z'.freeze
+      GENERIC_COMMAND_REGEXP_MATCHER = '\A\s*\/(%s)(\s+(.*))?\Z'.freeze
+
+      COMMAND_REGEXP_MATCHER = /\A\s*\/(#{ALLOWED_KEY_CHARS}*)(\s+(.*))?\Z/m.freeze
+      SHORTCODE_3CHARS_MATCHER = /\A\s*(#{ALLOWED_KEY_CHARS}{2})(\s+(.*))?\Z/m.freeze
+      SHORTCODE_4CHARS_MATCHER = /\A\s*(#{ALLOWED_KEY_CHARS}{3})(\s+(.*))?\Z/m.freeze
+      SHORTCODE_NCHARS_MATCHER = /\A\s*(#{ALLOWED_KEY_CHARS}*)(\s+(.*))?\Z/m.freeze
 
       module ClassMethods
         def command(cmd_key, *args, &block)
@@ -47,7 +56,7 @@ module Palmade::Kanned
             raise UnknownCommandType, "Unknown command type #{cmd_type}"
           end
 
-          # normalize cmd_key, to lower version
+          # normalize cmd_key, to lower case version
           cmd_key = cmd_key.to_s.downcase.freeze
 
           unless cmd_key =~ ALLOWED_COMMAND_KEYS
@@ -83,9 +92,9 @@ module Palmade::Kanned
 
             case cmd_type
             when :shortcode
-              cmd_data[1] = /\A\s*(#{cmd_key})(\s+(.*))?\Z/m.freeze
+              cmd_data[1] = Regexp.new(sprintf(GENERIC_SHORTCODE_REGEXP_MATCHER, cmd_key), Regexp::MULTILINE).freeze
             when :command
-              cmd_data[1] = /\A\s*\/(#{cmd_key})(\s+(.*))?\Z/m.freeze
+              cmd_data[1] = Regexp.new(sprintf(GENERIC_COMMAND_REGEXP_MATCHER, cmd_key), Regexp::MULTILINE).freeze
             end
 
             cmd_data[2] = cmd_method.freeze
@@ -104,6 +113,18 @@ module Palmade::Kanned
         class << base
           attr_accessor :text_commands
           attr_accessor :text_shortcodes
+        end
+
+        base.class_eval do
+          protected
+
+          def text_commands
+            self.class.text_commands
+          end
+
+          def text_shortcodes
+            self.class.text_shortcodes
+          end
         end
       end
 
