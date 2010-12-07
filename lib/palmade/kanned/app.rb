@@ -108,6 +108,8 @@ module Palmade::Kanned
                             ret[0] ? ret[1][0] : Clognotperformed,
                             request.request_method.to_s.upcase,
                             request.path) }
+
+      ret
     end
 
     def build_gateway_routes!
