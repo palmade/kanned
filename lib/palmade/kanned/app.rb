@@ -36,6 +36,8 @@ module Palmade::Kanned
         e.backtrace.join("\n\t") + "\n\n" }
 
       return fail!
+    ensure
+      logger.flush if logger.respond_to?(:flush)
     end
 
     protected
