@@ -37,10 +37,18 @@ module Palmade::Kanned
 
       return fail!
     ensure
-      logger.flush if logger.respond_to?(:flush)
+      flush_logs if logger.respond_to?(:flush)
     end
 
     protected
+
+    def flush_logs
+      if defined?(EventMachine) && EventMachine.reactor_running?
+        EventMachine.next_tick { logger.flush }
+      else
+        logger.flush
+      end
+    end
 
     def gateways
       @init.gateways
