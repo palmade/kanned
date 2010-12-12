@@ -24,6 +24,7 @@ module Palmade
     class NotImplemented < KannedError; end
     class MalformedRequest < KannedError; end
     class UnsupportedEncoding < KannedError; end
+    class IncompleteRequest < KannedError; end
 
     def self.init; @@init; end
     def self.init=(i); @@init = i; end

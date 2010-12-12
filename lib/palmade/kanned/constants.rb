@@ -5,7 +5,11 @@ module Palmade::Kanned
     CPATH_INFO = "PATH_INFO".freeze
     Crack_input = "rack.input".freeze
     CREMOTE_ADDR = "REMOTE_ADDR".freeze
+    CREQUEST_METHOD = "REQUEST_METHOD".freeze
     CQUERY_STRING = "QUERY_STRING".freeze
+
+    CGET = "GET".freeze
+    CPOST = "POST".freeze
 
     CHTTP_X_KANNEL_FROM = "HTTP_X_KANNEL_FROM".freeze
     CHTTP_X_KANNEL_TO = "HTTP_X_KANNEL_TO".freeze
@@ -17,6 +21,7 @@ module Palmade::Kanned
 
     CContentType = "Content-Type".freeze
     CCTtext_plain = "text/plain; charset=utf-8".freeze
+    CCTtext_html = "text/html; charset=utf-8".freeze
 
     CKANNED_GATEWAY_PATH = "KANNED_GATEWAY_PATH".freeze
     CKANNED_GATEWAY_KEY = "KANNED_GATEWAY_KEY".freeze

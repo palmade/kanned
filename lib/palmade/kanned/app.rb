@@ -72,12 +72,23 @@ module Palmade::Kanned
               env[CKANNED_PATH_PARAMS] = path_params.freeze
 
               gw = gateways[gw_r[2]]
-              msg_hash, env, path_params = gw.adapter(adapter_key).
-                parse_request(env, path_params)
+              adapter = gw.adapter(adapter_key)
 
-              benchmark_and_log(gw, msg_hash, env) do
-                performed, response = gw.call(msg_hash, env, path_params)
+              # Parse request based on the adapter
+              msg_hash, env, path_params = adapter.parse_request(env, path_params)
+
+              unless msg_hash.nil?
+                benchmark_and_log(gw, msg_hash, env) do
+                  performed, response = gw.call(msg_hash, env, path_params)
+                end
               end
+
+              # Post process, if applicable
+              performed, response = adapter.post_process(env,
+                                                         path_params,
+                                                         msg_hash,
+                                                         performed,
+                                                         response)
             end
           end
 
@@ -97,8 +108,12 @@ module Palmade::Kanned
       tm = Time.now.strftime(Clogtimestamp)
       request = Rack::Request.new(env)
 
-      message = msg_hash[CMESSAGE][0,70].
-        split(Clognewlineregex).join(Clognewlinespacing)
+      unless msg_hash[CMESSAGE].nil?
+        message = msg_hash[CMESSAGE][0,70].
+          split(Clognewlineregex).join(Clognewlinespacing)
+      else
+        message = nil
+      end
 
       logger.info { sprintf(Clogprocessingformat,
                             request.request_method.to_s.upcase,

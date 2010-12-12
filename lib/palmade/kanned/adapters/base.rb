@@ -51,12 +51,16 @@ module Palmade::Kanned
         self
       end
 
-      def call(env, path_params = nil)
-        raise NotImplemented, "call method not implemented"
+      def parse_request(env, path_params = nil)
+        raise NotImplemented, "parse_request method not implemented"
       end
 
       def send_sms
         raise NotImplemented, "send_sms method not implemented"
+      end
+
+      def post_process(env, path_params, msg_hash, performed, response)
+        [ performed, response ]
       end
 
       protected

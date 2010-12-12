@@ -4,6 +4,7 @@ module Palmade::Kanned
     autoload :Smsbox, File.join(KANNED_LIB_DIR, 'kanned/adapters/smsbox')
     autoload :Twilio, File.join(KANNED_LIB_DIR, 'kanned/adapters/twilio')
     autoload :Mbuni, File.join(KANNED_LIB_DIR, 'kanned/adapters/mbuni')
+    autoload :Dummy, File.join(KANNED_LIB_DIR, 'kanned/adapters/dummy')
 
     def self.create(gw, adapter_key, adapter_config = { })
       case adapter_key
@@ -13,6 +14,8 @@ module Palmade::Kanned
         Twilio.create(gw, adapter_key, adapter_config)
       when 'mbuni'
         Mbuni.create(gw, adapter_key, adapter_config)
+      when 'dummy'
+        Dummy.create(gw, adapter_key, adapter_config)
       else
         raise UnknownAdapter, "Unknown adapter #{adapter_key}"
       end
