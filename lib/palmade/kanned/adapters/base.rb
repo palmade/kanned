@@ -11,6 +11,7 @@ module Palmade::Kanned
 
       # == SAMPLE MESSAGE hash after being parsed by an adapter
       DEFAULT_MESSAGE_HASH = {
+        CMESSAGE_TYPE => nil,
         CMESSAGE_ID => nil,
 
         # == Message details
@@ -22,6 +23,9 @@ module Palmade::Kanned
         # encoded, in binary format
         CMESSAGE => nil,
         CSUBJECT => nil,
+
+        # if this is an MMS message
+        CATTACHMENTS => nil,
 
         # == Internal request details
         CREMOTE_ADDR => nil, # "127.0.0.1"
@@ -65,8 +69,8 @@ module Palmade::Kanned
 
       protected
 
-      def empty_message_hash
-        { }.merge(DEFAULT_MESSAGE_HASH)
+      def empty_message_hash(mtype = CSMS)
+        { CMESSAGE_TYPE => mtype }.merge(DEFAULT_MESSAGE_HASH)
       end
     end
   end

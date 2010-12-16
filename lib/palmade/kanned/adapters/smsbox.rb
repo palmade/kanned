@@ -73,7 +73,7 @@ module Palmade::Kanned
           CHTTP_X_KANNEL_TO,
           CHTTP_X_KANNEL_SMSC,
           CHTTP_X_KANNEL_TIME ].each do |k|
-          if !env.include?(k) || env[k].empty?
+          if !env.include?(k) || env[k].nil? || env[k].empty?
             raise MalformedRequest, "Invalid header value for #{k} #{env[k]}"
           end
         end
@@ -84,7 +84,7 @@ module Palmade::Kanned
       Ccoding1 = '1'.freeze
       Ccoding2 = '2'.freeze
       def parse_message_hash(env, path_params)
-        msg_hash = empty_message_hash
+        msg_hash = empty_message_hash(CSMS)
 
         msg_hash[CMESSAGE_ID], *rest = path_params.split(Cslash, 2)
         msg_hash[CMESSAGE_ID].freeze

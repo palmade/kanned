@@ -16,17 +16,37 @@ module Palmade::Kanned
     CHTTP_X_KANNEL_SMSC = "HTTP_X_KANNEL_SMSC".freeze
     CHTTP_X_KANNEL_TIME = "HTTP_X_KANNEL_TIME".freeze
     CHTTP_X_KANNEL_CODING = "HTTP_X_KANNEL_CODING".freeze
+
+    CHTTP_X_MBUNI_MESSAGE_ID = "HTTP_X_MBUNI_MESSAGE_ID".freeze
+    CHTTP_X_MBUNI_MMSC_ID = "HTTP_X_MBUNI_MMSC_ID".freeze
+    CHTTP_X_MBUNI_FROM = "HTTP_X_MBUNI_FROM".freeze
+    CHTTP_X_MBUNI_SUBJECT = "HTTP_X_MBUNI_SUBJECT".freeze
+    CHTTP_X_MBUNI_TRANSACTIONID = "HTTP_X_MBUNI_TRANSACTIONID".freeze
+    CHTTP_X_MBUNI_TO = "HTTP_X_MBUNI_TO".freeze
+    CHTTP_X_MBUNI_MESSAGE_DATE = "HTTP_X_MBUNI_MESSAGE_DATE".freeze
+    CHTTP_X_MBUNI_RECEIVED_DATE = "HTTP_X_MBUNI_RECEIVED_DATE".freeze
+
     CHTTP_DATE = "HTTP_DATE".freeze
     CHTTP_USER_AGENT = "HTTP_USER_AGENT".freeze
 
     CContentType = "Content-Type".freeze
+    CContentTypeRegEx = /\s*[;,]\s*/.freeze
     CCTtext_plain = "text/plain; charset=utf-8".freeze
     CCTtext_html = "text/html; charset=utf-8".freeze
+    Ctext = "text".freeze
+    Cimage = "image".freeze
+    Ccharset = "charset".freeze
+    Cparts = "parts".freeze
 
     CKANNED_GATEWAY_PATH = "KANNED_GATEWAY_PATH".freeze
     CKANNED_GATEWAY_KEY = "KANNED_GATEWAY_KEY".freeze
     CKANNED_ADAPTER_KEY = "KANNED_ADAPTER_KEY".freeze
     CKANNED_PATH_PARAMS = "KANNED_PATH_PARAMS".freeze
+
+    CMESSAGE_TYPE = "MESSAGE_TYPE".freeze
+    CSMS = "SMS".freeze
+    CMMS = "MMS".freeze
+    Cutf8 = "utf-8".freeze
 
     CMESSAGE_ID = "MESSAGE_ID".freeze
     CSENDER_NUMBER = "SENDER_NUMBER".freeze
@@ -35,6 +55,7 @@ module Palmade::Kanned
     CRECEIVED_AT = "RECEIVED_AT".freeze
     CMESSAGE = "MESSAGE".freeze
     CSUBJECT = "SUBJECT".freeze
+    CATTACHMENTS = "ATTACHMENTS".freeze
     CUSER_AGENT = "USER_AGENT".freeze
     CREQUESTED_AT = "REQUESTED_AT".freeze
 

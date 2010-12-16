@@ -85,12 +85,77 @@ module Palmade::Kanned
 
       # called when processing web requests (aka receiving sms)
       def parse_request(env, path_params)
-        env['rack.input'] = strip_leading_eol(env['rack.input'])
+        validate_request!(env, path_params)
 
-        [ nil, env, path_params ]
+        env[Crack_input] = strip_leading_eol(env[Crack_input])
+        parse_message_hash(env, path_params)
       end
 
       protected
+
+      Cslash = "/".freeze
+      def parse_message_hash(env, path_params)
+        msg_hash = empty_message_hash(CMMS)
+
+        msg_hash[CSENDER_NUMBER] = env[CHTTP_X_MBUNI_FROM].dup.freeze
+        msg_hash[CRECIPIENT_NUMBER] = env[CHTTP_X_MBUNI_TO].dup.freeze
+        msg_hash[CRECIPIENT_ID] = env[CHTTP_X_MBUNI_MMSC_ID].dup.freeze
+        msg_hash[CRECEIVED_AT] = Time.parse(env[CHTTP_X_MBUNI_RECEIVED_DATE]).utc.freeze
+
+        msg_hash[CSUBJECT] = env[CHTTP_X_MBUNI_SUBJECT].dup.freeze
+
+        r = Rack::Request.new(env)
+        r.POST[Cparts].each do |part|
+          ct, ct_params = parse_content_type(part[:type])
+          puts "CT: #{ct.inspect}, #{ct_params.inspect}"
+
+          case ct.split(Cslash).first
+          when Ctext
+            temp_file = part[:tempfile]
+            temp_file.rewind
+
+            case ct_params[Ccharset]
+            when Cutf8
+              msg_hash[CMESSAGE] = temp_file.read.force_encoding(CEncUTF8).freeze
+            else
+              msg_hash[CMESSAGE] = temp_file.read.force_encoding(CEncBINARY).freeze
+            end
+          else
+            msg_hash[CATTACHMENTS] ||= [ ]
+            msg_hash[CATTACHMENTS].push(part)
+          end
+        end
+
+        msg_hash[CREMOTE_ADDR] = env[CREMOTE_ADDR].dup.freeze
+        msg_hash[CUSER_AGENT] = env[CHTTP_USER_AGENT].dup.freeze
+        msg_hash[CREQUESTED_AT] = Time.now.utc.freeze
+        msg_hash[CQUERY_STRING] = env[CQUERY_STRING].dup.freeze
+
+        msg_hash[CKANNED_GATEWAY_PATH] = env[CKANNED_GATEWAY_PATH]
+        msg_hash[CKANNED_GATEWAY_KEY] = env[CKANNED_GATEWAY_KEY]
+        msg_hash[CKANNED_ADAPTER_KEY] = env[CKANNED_ADAPTER_KEY]
+        msg_hash[CKANNED_PATH_PARAMS] = env[CKANNED_PATH_PARAMS]
+
+        puts "\n\n===== MSG HASH ====="
+        pp msg_hash
+        puts "=====\n"
+
+        [ msg_hash, env, path_params ]
+      end
+
+      def validate_request!(env, path_params)
+        [ CHTTP_X_MBUNI_MESSAGE_ID,
+          CHTTP_X_MBUNI_MMSC_ID,
+          CHTTP_X_MBUNI_TRANSACTIONID,
+          CHTTP_X_MBUNI_FROM,
+          CHTTP_X_MBUNI_TO,
+          CHTTP_X_MBUNI_RECEIVED_DATE
+        ].each do |k|
+          if !env.include?(k) || env[k].nil? || env[k].empty?
+            raise MalformedRequest, "Invalid header value for #{k} #{env[k]}"
+          end
+        end
+      end
 
       Ceol = "\r\n".freeze
       CKannedMmsboxBody = "kanned-mmsbox-body".freeze
@@ -112,6 +177,15 @@ module Palmade::Kanned
         end
 
         input
+      end
+
+      Ceql = '='.freeze
+      def parse_content_type(content_type)
+        ct_parts = content_type.split(CContentTypeRegEx, 2)
+        [ ct_parts.first.downcase,
+          Hash[*ct_parts[1..-1].
+               collect { |s| s.split(Ceql, 2) }.
+               map { |k,v| [k.downcase, v] }.flatten] ]
       end
     end
   end
