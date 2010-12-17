@@ -97,6 +97,7 @@ module Palmade::Kanned
       def parse_message_hash(env, path_params)
         msg_hash = empty_message_hash(CMMS)
 
+        msg_hash[CMESSAGE_ID] = env[CHTTP_X_MBUNI_MESSAGE_ID].dup.freeze
         msg_hash[CSENDER_NUMBER] = env[CHTTP_X_MBUNI_FROM].dup.freeze
         msg_hash[CRECIPIENT_NUMBER] = env[CHTTP_X_MBUNI_TO].dup.freeze
         msg_hash[CRECIPIENT_ID] = env[CHTTP_X_MBUNI_MMSC_ID].dup.freeze
@@ -107,7 +108,6 @@ module Palmade::Kanned
         r = Rack::Request.new(env)
         r.POST[Cparts].each do |part|
           ct, ct_params = parse_content_type(part[:type])
-          puts "CT: #{ct.inspect}, #{ct_params.inspect}"
 
           case ct.split(Cslash).first
           when Ctext

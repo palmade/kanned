@@ -18,6 +18,18 @@ module Palmade::Kanned
       @msg_hash.size
     end
 
+    def sms?
+      message_type == CSMS
+    end
+
+    def mms?
+      message_type == CMMS
+    end
+
+    def message_type
+      @msg_hash[CMESSAGE_TYPE]
+    end
+
     def sender_number
       @msg_hash[CSENDER_NUMBER]
     end
@@ -36,6 +48,14 @@ module Palmade::Kanned
 
     def message
       @msg_hash[CMESSAGE]
+    end
+
+    def subject
+      @msg_hash[CSUBJECT]
+    end
+
+    def attachments
+      @msg_hash[CATTACHMENTS]
     end
   end
 end
