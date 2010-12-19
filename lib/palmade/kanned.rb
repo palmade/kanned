@@ -18,6 +18,8 @@ module Palmade
     autoload :Controller, File.join(KANNED_LIB_DIR, 'kanned/controller')
     autoload :Message, File.join(KANNED_LIB_DIR, 'kanned/message')
 
+    autoload :Http, File.join(KANNED_LIB_DIR, 'kanned/http')
+
     class KannedError < StandardError; end
     class ConfigError < KannedError; end
     class UnknownAdapter < KannedError; end
@@ -25,6 +27,8 @@ module Palmade
     class MalformedRequest < KannedError; end
     class UnsupportedEncoding < KannedError; end
     class IncompleteRequest < KannedError; end
+    class CantSend < KannedError; end
+    class HttpServiceRequired < KannedError; end
 
     def self.init; @@init; end
     def self.init=(i); @@init = i; end

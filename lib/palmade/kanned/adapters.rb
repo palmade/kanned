@@ -6,6 +6,12 @@ module Palmade::Kanned
     autoload :Mmsbox, File.join(KANNED_LIB_DIR, 'kanned/adapters/mmsbox')
     autoload :Dummy, File.join(KANNED_LIB_DIR, 'kanned/adapters/dummy')
 
+    CAN_SEND_ADAPTERS = [ "smsbox", "twilio" ]
+
+    def self.which_can_send(keys)
+      (keys & CAN_SEND_ADAPTERS).first
+    end
+
     def self.create(gw, adapter_key, adapter_config = { })
       case adapter_key
       when 'smsbox'

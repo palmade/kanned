@@ -49,6 +49,18 @@
 #  "KANNED_PATH_PARAMS"=>nil}
 #
 
+# For sending SMS
+#
+# HTTP 202 Accepted
+# "0: Accepted for delivery"
+# {"server"=>["Kannel/svn-r"],
+#  "date"=>["Sun, 19 Dec 2010 15:20:13 GMT"],
+#  "content-length"=>["24"],
+#  "content-type"=>["text/html"],
+#  "pragma"=>["no-cache"],
+#  "cache-control"=>["no-cache"]}
+#
+
 module Palmade::Kanned
   module Adapters
     class Smsbox < Base
@@ -66,7 +78,90 @@ module Palmade::Kanned
         parse_message_hash(env, path_params)
       end
 
+      def send_sms(number, message, sender_id = nil)
+        check_can_send!
+        send_sms_post(number, message, sender_id)
+      end
+
       protected
+
+      Csend_url = "send_url".freeze
+      Cusername = "username".freeze
+      Cpassword = "password".freeze
+      Cto = "to".freeze
+      Ctext = "text".freeze
+      Csmsc = "smsc".freeze
+      Ccharset = "charset".freeze
+      Cutf8 = "utf-8".freeze
+      CXKannelUsername = "X-Kannel-Username".freeze
+      CXKannelPassword = "X-Kannel-Password".freeze
+      CXKannelTo = "X-Kannel-To".freeze
+      CXKannelSMSC = "X-Kannel-SMSC".freeze
+      def send_sms_post(number, message, sender_id = nil)
+        send_url = @config[Csend_url]
+        send_username = @config[Cusername]
+        send_password = @config[Cpassword]
+
+        http_options = { }
+        h = http_options[:headers] = { }
+        h[CContentType] = CCTtext_plain
+        h[CXKannelUsername] = send_username
+        h[CXKannelPassword] = send_password
+        h[CXKannelTo] = number
+
+        unless sender_id.nil?
+          h[CXKannelSMSC] = sender_id
+        end
+
+        http_options[:body] = message
+
+        handle_resp!(http.post(send_url, { }, nil, http_options))
+      end
+
+      def send_sms_get(number, message, sender_id = nil)
+        send_url = @config[Csend_url]
+        send_username = @config[Cusername]
+        send_password = @config[Cpassword]
+
+        params = {
+          Cusername => send_username,
+          Cpassword => send_password,
+          Cto => number,
+          Ctext => message,
+          Cutf8 => Cutf8.freeze
+        }
+
+        unless sender_id.nil?
+          params[Csmsc] = sender_id
+        end
+
+        query = http.query_string(params)
+        url = "%s?%s" % [ send_url, query ]
+        handle_resp!(http.get(url))
+      end
+
+      def handle_resp!(resp)
+        case resp.code
+        when 202
+          [ true, resp.read, resp ]
+        else
+          [ false, resp.read, resp ]
+        end
+      end
+
+      def check_can_send!
+        [ Csend_url,
+          Cusername,
+          Cpassword ].each do |k|
+          if !@config.include?(k) || @config[k].nil? || @config[k].empty?
+            raise CantSend, "Send sms configuration not complete"
+          end
+        end
+      end
+
+      def http
+        Palmade::Kanned::Http
+      end
 
       def validate_request!(env, path_params)
         [ CHTTP_X_KANNEL_FROM,

@@ -39,17 +39,17 @@ context "init" do
     it "gateway should have config loaded" do
       # config: adapters
       @config['adapters'].should_not be_nil
-      @config['adapters'].size.should == 3
+      @config['adapters'].size.should == 4
       @config['adapters'].include?('smsbox').should be_true
-      ([ 'smsbox', 'twilio', 'mbuni' ] - @config['adapters']).should be_empty
+      ([ 'smsbox', 'twilio', 'mmsbox', 'dummy' ] - @config['adapters']).should be_empty
 
       # config: smsbox
       @config.should include "smsbox"
       @config["smsbox"].should_not be_nil
 
-      # config: mbuni
-      @config.should include "mbuni"
-      @config["mbuni"].should_not be_nil
+      # config: mmsbox
+      @config.should include "mmsbox"
+      @config["mmsbox"].should_not be_nil
 
       # config: twilio
       @config.should include "twilio"

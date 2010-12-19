@@ -59,7 +59,7 @@ module Palmade::Kanned
         raise NotImplemented, "parse_request method not implemented"
       end
 
-      def send_sms
+      def send_sms(number, message, sender_id)
         raise NotImplemented, "send_sms method not implemented"
       end
 

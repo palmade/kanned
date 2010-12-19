@@ -4,13 +4,13 @@ gateways:
   # [POST] /kanndee/mbuni
   # [POST] /kanndee/twilio
   test:
-    adapters: [ smsbox, mbuni, twilio ]
+    adapters: [ smsbox, mmsbox, twilio, dummy ]
     secret: xxx
     smsbox:
-      send_url: http://127.0.0.1:13001/cgi-bin/sendsms
-      username: xxx
-      password: xxx
-    mbuni:
+      send_url: http://127.0.0.1:13013/cgi-bin/sendsms
+      username: testing
+      password: testing001
+    mmsbox:
       send_url: http://127.0.0.1:12001/cgi-bin/sendmms
       username: xxx
       password: xxx

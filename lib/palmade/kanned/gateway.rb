@@ -30,12 +30,11 @@ module Palmade::Kanned
     end
 
     def url_prefix
-      "/#{gateway_key}"
+      "/#{gateway_key}".freeze
     end
 
     def build!
       build_adapters!
-
       self
     end
 
@@ -46,6 +45,18 @@ module Palmade::Kanned
       else
         raise UnknownAdapter, "Unknown adapter key #{adapter_key}"
       end
+    end
+
+    def send_sms(number, message, sender_id = nil, adapter_key = nil)
+      if adapter_key.nil?
+        adapter_key = Adapters.which_can_send(@adapters.keys)
+      end
+
+      if adapter_key.nil?
+        raise CantSend, "No adapter key specified or none of the adapters can send."
+      end
+
+      adapter(adapter_key).send_sms(number, message, sender_id)
     end
 
     protected
