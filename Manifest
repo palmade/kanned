@@ -3,10 +3,12 @@ Manifest
 README.rdoc
 Rakefile
 bin/kanned
+kanned.gemspec
 lib/palmade/kanned.rb
 lib/palmade/kanned/adapters.rb
 lib/palmade/kanned/adapters/base.rb
-lib/palmade/kanned/adapters/mbuni.rb
+lib/palmade/kanned/adapters/dummy.rb
+lib/palmade/kanned/adapters/mmsbox.rb
 lib/palmade/kanned/adapters/smsbox.rb
 lib/palmade/kanned/adapters/twilio.rb
 lib/palmade/kanned/app.rb
@@ -17,6 +19,7 @@ lib/palmade/kanned/controller.rb
 lib/palmade/kanned/controller/commands.rb
 lib/palmade/kanned/controller/messages.rb
 lib/palmade/kanned/gateway.rb
+lib/palmade/kanned/http.rb
 lib/palmade/kanned/init.rb
 lib/palmade/kanned/message.rb
 lib/palmade/kanned/middleware.rb
@@ -26,4 +29,6 @@ spec/controller_commands_matcher_spec.rb
 spec/controller_commands_spec.rb
 spec/controller_perform_spec.rb
 spec/init_spec.rb
+spec/send_sms_spec.rb
+spec/spec.opts
 spec/spec_helper.rb
