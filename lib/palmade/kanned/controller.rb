@@ -95,6 +95,7 @@ module Palmade::Kanned
     def reply_nothing!
       @reply = nil
     end
+    alias :reply_nothing :reply_nothing!
 
     def reply_final!(msg, reply_code = 200)
       performed!

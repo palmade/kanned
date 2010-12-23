@@ -1,4 +1,5 @@
 # -*- encoding: utf-8 -*-
+require 'csv'
 
 module Palmade::Kanned
   class Controller
@@ -225,6 +226,29 @@ module Palmade::Kanned
           else
             nil
           end
+        end
+      end
+
+      def params
+        if defined?(@params)
+          @params
+        else
+          @params = parse_parameters
+        end
+      end
+
+      Cspace = ' '.freeze
+      def parse_parameters(sep = Cspace)
+        unless cmd_params.nil?
+          case sep
+          when Cspace
+            cmd_params.parse_csv(:col_sep => sep,
+                                 :row_sep => nil) || [ ]
+          else
+            [ ]
+          end
+        else
+          [ ]
         end
       end
     end
