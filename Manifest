@@ -23,6 +23,7 @@ lib/palmade/kanned/http.rb
 lib/palmade/kanned/init.rb
 lib/palmade/kanned/message.rb
 lib/palmade/kanned/middleware.rb
+lib/palmade/kanned/texter.rb
 lib/palmade/kanned/utils.rb
 spec/config/kanned.yml
 spec/controller_commands_matcher_spec.rb
@@ -32,3 +33,4 @@ spec/init_spec.rb
 spec/send_sms_spec.rb
 spec/spec.opts
 spec/spec_helper.rb
+spec/texter_spec.rb
