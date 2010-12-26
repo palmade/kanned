@@ -71,5 +71,7 @@ module Palmade::Kanned
                             "  SMS from %s to %s %s\n" +
                             "    %s").freeze
     Clogcompletedformat =  ("Completed in %.5f (%s reqs/sec) | %s [ %s %s ]").freeze
+
+    Clogtextersending = "  Sending SMS to %s\n    %s".freeze
   end
 end

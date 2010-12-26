@@ -22,6 +22,8 @@ context "gateway" do
     end
 
     it "should send an sms" do
+      # Uncomment the following line if you want to send a text message.
+      #
       resp = @gw.send_sms('+639176327037', 'Howdy do!')
       resp[0].should be_true
       resp[1].should_not be_empty

@@ -17,6 +17,7 @@ module Palmade
     autoload :Gateway, File.join(KANNED_LIB_DIR, 'kanned/gateway')
     autoload :Controller, File.join(KANNED_LIB_DIR, 'kanned/controller')
     autoload :Message, File.join(KANNED_LIB_DIR, 'kanned/message')
+    autoload :Texter, File.join(KANNED_LIB_DIR, 'kanned/texter')
 
     autoload :Http, File.join(KANNED_LIB_DIR, 'kanned/http')
 
@@ -29,6 +30,7 @@ module Palmade
     class IncompleteRequest < KannedError; end
     class CantSend < KannedError; end
     class HttpServiceRequired < KannedError; end
+    class SendSmsFail < KannedError; end
 
     def self.init; @@init; end
     def self.init=(i); @@init = i; end
