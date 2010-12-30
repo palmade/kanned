@@ -70,6 +70,13 @@ module Palmade::Kanned
 
       def initialize(gw, adapter_key, config = { })
         super(gw, adapter_key, DEFAULT_CONFIG.merge(config))
+
+        if config.include?("method") ||
+            config["method"] == "POST"
+          @method = :post
+        else
+          @method = :get
+        end
       end
 
       # called when processing web requests (aka receiving sms)
@@ -80,7 +87,14 @@ module Palmade::Kanned
 
       def send_sms(number, message, sender_id = nil)
         check_can_send!
-        send_sms_post(number, message, sender_id)
+        case @method
+        when :post
+          send_sms_post(number, message, sender_id)
+        when :get
+          send_sms_get(number, message, sender_id)
+        else
+          raise "Unsupported send method #{@method}"
+        end
       end
 
       protected
