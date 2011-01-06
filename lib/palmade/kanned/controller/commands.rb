@@ -29,14 +29,14 @@ module Palmade::Kanned
       # starts with a letter (any case) and can continue with
       # numbers afterwards, with at least 1 character
       ALLOWED_KEY_CHARS = '[a-zA-Z][a-zA-Z0-9]'.freeze
-      ALLOWED_COMMAND_KEYS = /\A#{ALLOWED_KEY_CHARS}+\Z/.freeze
+      ALLOWED_COMMAND_KEYS = /\A#{ALLOWED_KEY_CHARS}*\Z/.freeze
 
       GENERIC_SHORTCODE_REGEXP_MATCHER = '\A\s*(%s)(\s+(.*))?\Z'.freeze
       GENERIC_COMMAND_REGEXP_MATCHER = '\A\s*\/(%s)(\s+(.*))?\Z'.freeze
 
-      COMMAND_REGEXP_MATCHER = /\A\s*\/(#{ALLOWED_KEY_CHARS}+)(\s+(.*))?\Z/m.freeze
+      COMMAND_REGEXP_MATCHER = /\A\s*\/(#{ALLOWED_KEY_CHARS}*)(\s+(.*))?\Z/m.freeze
       SHORTCODE_CHARS_MATCHER = /\A\s*(#{ALLOWED_KEY_CHARS}{2,3})(\s+(.*))?\Z/m.freeze
-      SHORTCODE_NCHARS_MATCHER = /\A\s*(#{ALLOWED_KEY_CHARS}+)(\s+(.*))?\Z/m.freeze
+      SHORTCODE_NCHARS_MATCHER = /\A\s*(#{ALLOWED_KEY_CHARS}*)(\s+(.*))?\Z/m.freeze
 
       module ClassMethods
         protected
