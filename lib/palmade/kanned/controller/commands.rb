@@ -210,7 +210,7 @@ module Palmade::Kanned
 
         shortcode_regexp = self.class.text_shortcodes_matcher || SHORTCODE_CHARS_MATCHER
 
-        if msg =~ SHORTCODE_CHARS_MATCHER
+        if msg =~ shortcode_regexp
           cmd_key = $~[1].downcase
           cmd_params = $~[2]
 
