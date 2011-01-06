@@ -45,6 +45,11 @@ module Palmade::Kanned
           self.text_shortcodes_matcher = SHORTCODE_NCHARS_MATCHER
         end
 
+        def command_and_shortcode(cmd_key, *args, &block)
+          command(cmd_key, *args, &block)
+          shortcode(cmd_key, *args, &block)
+        end
+
         def command(cmd_key, *args, &block)
           _add_command(:command, cmd_key, *args, &block)
         end
