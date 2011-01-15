@@ -46,6 +46,8 @@ module Palmade::Kanned
           v = v.collect { |n| n.dup }
         when Hash
           v = v.inject({ }) { |h, d| h[d[0].dup.freeze] = d[1].dup; h }
+        when TrueClass, FalseClass
+          v = v
         else
           v = v.dup
         end

@@ -56,10 +56,18 @@ module Palmade::Kanned
         raise CantSend, "No adapter key specified or none of the adapters can send."
       end
 
-      adapter(adapter_key).send_sms(number, message, sender_id)
+      unless testing?
+        adapter(adapter_key).send_sms(number, message, sender_id)
+      else
+        logger.debug { "  !!! [TEST] Sending sms to #{number}: #{message}" }
+      end
     end
 
     protected
+
+    def testing?
+      config.include?("testing") && config["testing"]
+    end
 
     def controller_klass
       if !@options[:cache_classes] || @controller_klass.nil?
