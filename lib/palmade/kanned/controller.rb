@@ -40,6 +40,9 @@ module Palmade::Kanned
       @env = env
       @path_params = path_params
 
+      # call before_filter
+      before_filter
+
       # process commands and shortcodes
       unless performed?
         catch(:performed) do
@@ -53,6 +56,9 @@ module Palmade::Kanned
           perform_message
         end
       end
+
+      # call after_filter
+      after_filter
 
       # by default, we mark it as performed, whatever the response.
       performed! unless performed?
@@ -70,6 +76,9 @@ module Palmade::Kanned
     end
 
     protected
+
+    def before_filter; end
+    def after_filter; end
 
     # == Note, support for other types of response.
     #
