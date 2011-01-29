@@ -144,30 +144,28 @@ module Palmade::Kanned
         end
 
         base.class_eval do
-          protected
-
           attr_reader :cmd_key
           attr_reader :cmd_params
-
-          def cmd_shortcode?
-            defined?(@cmd_shortcode) && @cmd_shortcode
-          end
-
-          def cmd_shortcode!
-            @cmd_shortcode = true
-          end
-
-          def text_commands
-            self.class.text_commands
-          end
-
-          def text_shortcodes
-            self.class.text_shortcodes
-          end
         end
       end
 
       protected
+
+      def cmd_shortcode?
+        defined?(@cmd_shortcode) && @cmd_shortcode
+      end
+
+      def cmd_shortcode!
+        @cmd_shortcode = true
+      end
+
+      def text_commands
+        self.class.text_commands
+      end
+
+      def text_shortcodes
+        self.class.text_shortcodes
+      end
 
       def perform_commands_and_shortcodes
         cmd_meth = nil

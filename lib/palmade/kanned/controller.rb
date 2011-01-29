@@ -14,6 +14,9 @@ module Palmade::Kanned
     autoload :Commands, File.join(KANNED_LIB_DIR, 'kanned/controller/commands')
     include Commands
 
+    autoload :CompoundCommands, File.join(KANNED_LIB_DIR, 'kanned/controller/compound_commands')
+    include CompoundCommands
+
     autoload :Messages, File.join(KANNED_LIB_DIR, 'kanned/controller/messages')
     include Messages
 

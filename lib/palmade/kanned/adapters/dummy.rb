@@ -83,16 +83,19 @@ module Palmade::Kanned
       def sms_form(msg_hash = nil, response = nil)
         smsf = ""
 
-        unless response.nil?
-          smsf += <<SMSFORM
-<p>Response:<br />#{Rack::Utils.escape_html(response.inspect)}</p>
-SMSFORM
-        end
-
         unless msg_hash.nil?
           sender_number = msg_hash[CSENDER_NUMBER]
+          message = msg_hash[CMESSAGE]
         else
           sender_number = nil
+          message
+        end
+
+        unless response.nil?
+          smsf += <<SMSFORM
+<p>Message: #{message}</p>
+<p>Response:<br />#{Rack::Utils.escape_html(response.inspect)}</p>
+SMSFORM
         end
 
         smsf += <<SMSFORM
