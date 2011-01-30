@@ -53,13 +53,17 @@ module Palmade::Kanned
 
         def match(controller)
           matched = nil
-          cmd_params = controller.cmd_params.lstrip
+          cmd_params = controller.cmd_params
 
-          unless @mapping.empty?
-            @mapping.each do |map|
-              if cmd_params =~ map[0]
-                matched = [ $~.dup ] + map[1..-1]
-                break
+          unless cmd_params.nil?
+            cmd_params = cmd_params.lstrip
+
+            unless @mapping.empty?
+              @mapping.each do |map|
+                if cmd_params =~ map[0]
+                  matched = [ $~.dup ] + map[1..-1]
+                  break
+                end
               end
             end
           end
