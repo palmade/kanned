@@ -192,13 +192,17 @@ module Palmade::Kanned
 
         if msg =~ COMMAND_REGEXP_MATCHER
           cmd_key = $~[1].downcase
-          cmd_params = $~[2]
+          cmd_params = $~[3]
 
           if text_commands.include?(cmd_key)
             cmd_data = text_commands[cmd_key]
 
             @cmd_key = cmd_key.freeze
             @cmd_params = cmd_params.freeze
+
+            logger.debug do
+              "  SMS command ##{@cmd_key}, params: #{@cmd_params}"
+            end
 
             # let's return the cmd_method
             cmd_data[2]
@@ -215,13 +219,18 @@ module Palmade::Kanned
 
         if msg =~ shortcode_regexp
           cmd_key = $~[1].downcase
-          cmd_params = $~[2]
+          cmd_params = $~[3]
 
           if text_shortcodes.include?(cmd_key)
             cmd_data = text_shortcodes[cmd_key]
 
             @cmd_key = cmd_key.freeze
             @cmd_params = cmd_params.freeze
+
+            logger.debug do
+              "  SMS short code ##{@cmd_key}, params: #{@cmd_params}"
+            end
+
             self.cmd_shortcode!
 
             # let's return the cmd_method

@@ -81,10 +81,9 @@ module Palmade::Kanned
           which = options[:which]
 
           if which.nil?
-            regex = /\A#{what}(\s+(\S+))?\s*\Z/im
+            regex = /\A(#{what})(\s+(\S+))?(\s+(.*))?\Z/im.freeze
           else
-            whichex =
-            regex = /\A((#{which.join('|')})\s+)?#{what}(\s+(\S+))?\s*\Z/im
+            regex = /\A((#{which.join('|')})\s+)?(#{what})(\s+(\S+))?(\s+(.*))?\Z/im.freeze
           end
 
           super(regex, method, options, &block)
@@ -97,11 +96,20 @@ module Palmade::Kanned
             regex_matches = matched[0]
 
             unless regex_matches.nil?
+              # Return a matched array as:
+              #
+              # [ WHICH, WHAT, WHOM, REST ]
+              #
               if matched[2].include?(:which)
                 matched[0] = [ regex_matches[2].nil? ? nil : regex_matches[2].to_sym,
-                               regex_matches[4] ]
+                               regex_matches[3],
+                               regex_matches[5],
+                               regex_matches[7] ]
               else
-                matched[0] = [ nil, regex_matches[2] ]
+                matched[0] = [ nil,
+                               regex_matches[1],
+                               regex_matches[3],
+                               regex_matches[5] ]
               end
             end
           end
@@ -181,6 +189,10 @@ module Palmade::Kanned
           matched = cc.match(self)
           unless matched.nil?
             @cmd_matched = matched
+
+            logger.debug do
+              "  SMS compound command ##{@cmd_key}, params: #{@cmd_matched[0].inspect}"
+            end
 
             if !matched[3].nil?
               instance_eval(&matched[3])
