@@ -101,7 +101,7 @@ module Palmade::Kanned
               # [ WHICH, WHAT, WHOM, REST ]
               #
               if matched[2].include?(:which)
-                matched[0] = [ regex_matches[2].nil? ? nil : regex_matches[2].to_sym,
+                matched[0] = [ regex_matches[2].nil? ? nil : regex_matches[2].downcase.to_sym,
                                regex_matches[3],
                                regex_matches[5],
                                regex_matches[7] ]
