@@ -159,7 +159,14 @@ module Palmade::Kanned
         when 202
           [ true, resp.read, resp ]
         else
-          [ false, resp.read, resp ]
+          resp_text = resp.read
+
+          case resp_text
+          when /\ANot\sroutable/i
+            [ false, :not_routable, resp ]
+          else
+            [ false, resp_text, resp ]
+          end
         end
       end
 

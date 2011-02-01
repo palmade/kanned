@@ -39,7 +39,14 @@ module Palmade::Kanned
       if success
         [ success, resp_text ]
       else
-        raise SendSmsFail, "Unable to send sms, fail with http #{resp.code}, response #{resp_text}"
+        case resp_text
+        when :not_routable
+          logger.error { "  [FAIL] Not routable SMS destination to #{number}, ignoring." }
+
+          [ success, resp_text, resp ]
+        else
+          raise SendSmsFail, "Unable to send sms, fail with http #{resp.code}, response #{resp_text}"
+        end
       end
     end
 
