@@ -21,8 +21,8 @@
 #  "HTTP_HOST"=>"127.0.0.1:4000",
 #  "HTTP_CONNECTION"=>"keep-alive",
 #  "HTTP_USER_AGENT"=>"Kannel/svn-r",
-#  "HTTP_X_KANNEL_FROM"=>"+639176327037",
-#  "HTTP_X_KANNEL_TO"=>"+639274041798",
+#  "HTTP_X_KANNEL_FROM"=>"+63xxxxxx",
+#  "HTTP_X_KANNEL_TO"=>"+63xxxxx",
 #  "HTTP_X_KANNEL_TIME"=>"2010-11-14 14:55:46",
 #  "HTTP_DATE"=>"2010-11-28 05:54:36",
 #  "HTTP_X_KANNEL_SMSC"=>"globe_smsc",
@@ -87,6 +87,7 @@ module Palmade::Kanned
 
       def send_sms(number, message, sender_id = nil)
         check_can_send!
+
         case @method
         when :post
           send_sms_post(number, message, sender_id)

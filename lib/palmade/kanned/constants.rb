@@ -33,6 +33,7 @@ module Palmade::Kanned
     CContentTypeRegEx = /\s*[;,]\s*/.freeze
     CCTtext_plain = "text/plain; charset=utf-8".freeze
     CCTtext_html = "text/html; charset=utf-8".freeze
+    CCTapplication_json = "application/json; chartset=utf-8".freeze
     Ctext = "text".freeze
     Cimage = "image".freeze
     Ccharset = "charset".freeze
@@ -73,5 +74,11 @@ module Palmade::Kanned
     Clogcompletedformat =  ("Completed in %.5f (%s reqs/sec) | %s [ %s %s ]").freeze
 
     Clogtextersending = "  Sending SMS to %s\n    %s".freeze
+
+    Cmessaging_token = 'messaging_token'.freeze
+    Caccount_id = 'account_id'.freeze
+    Capi_url = 'api_url'.freeze
+    Cparameters = 'parameters'.freeze
+    Ctrue = 'true'. freeze
   end
 end

@@ -31,6 +31,7 @@ module Palmade
     class CantSend < KannedError; end
     class HttpServiceRequired < KannedError; end
     class SendSmsFail < KannedError; end
+    class InvalidRequest < KannedError; end
 
     def self.init; @@init; end
     def self.init=(i); @@init = i; end
