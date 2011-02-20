@@ -4,9 +4,11 @@ gateways:
   # [POST] /kanndee/mbuni
   # [POST] /kanndee/twilio
   test:
-    adapters: [ smsbox, mmsbox, twilio, dummy ]
+    adapters: [ smsbox, mmsbox, tropo, dummy ]
     secret: xxx
+    testing: true
     smsbox:
+      allowed_regex: "\+63\d+"
       send_url: http://127.0.0.1:13013/cgi-bin/sendsms
       username: testing
       password: testing001
@@ -14,9 +16,10 @@ gateways:
       send_url: http://127.0.0.1:12001/cgi-bin/sendmms
       username: xxx
       password: xxx
-    twilio:
-      account_sid: xxx
-      auth_token: xxx
+    tropo:
+      api_url: https://api.tropo.com/1.0/sessions
+      account_id: '11111'
+      messaging_token: '5e43c74a3ee112a340d1296e9729df83f3384a1c259ba28cec1660459ca20580ae95eff837997619000309a0f4db13edf35c8637454c95965f5e49c024c2fb1c'
 
   # connects to gammu db directly, perhaps?
   # gammu:

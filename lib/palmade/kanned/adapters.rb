@@ -12,7 +12,7 @@ module Palmade::Kanned
     CAN_SEND_ADAPTERS = [ "smsbox", "twilio", "tropo", "clickatell" ]
 
     def self.which_can_send(keys)
-      (keys & CAN_SEND_ADAPTERS).first
+      keys.collect { |k| CAN_SEND_ADAPTERS.include?(k.to_s) ? k : nil }.compact
     end
 
     def self.create(gw, adapter_key, adapter_config = { })

@@ -80,5 +80,6 @@ module Palmade::Kanned
     Capi_url = 'api_url'.freeze
     Cparameters = 'parameters'.freeze
     Ctrue = 'true'. freeze
+    Callowed_regex = 'allowed_regex'.freeze
   end
 end

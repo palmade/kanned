@@ -10,6 +10,7 @@ module Palmade::Kanned
     attr_reader :config
     attr_reader :options
     attr_reader :adapters
+    attr_reader :adapter_keys
     attr_reader :logger
 
     def self.create(init, gw_k, gw_opts, config)
@@ -21,7 +22,11 @@ module Palmade::Kanned
       @gateway_key = gw_k
       @options = DEFAULT_OPTIONS.merge(gw_opts)
       @config = config
+
       @adapters = { }
+      @adapter_keys = [ ]
+      @adapters_can_send = [ ]
+
       @controller_klass = nil
     end
 
@@ -47,26 +52,70 @@ module Palmade::Kanned
       end
     end
 
-    def send_sms(number, message, sender_id = nil, adapter_key = nil)
-      if adapter_key.nil?
-        adapter_key = Adapters.which_can_send(@adapters.keys)
-      end
+    def send_sms(number, message, sender_id = nil, adapter_keys = nil)
+      adapter_for_sending(number, message, sender_id, adapter_keys) do |ad|
+        if testing?
+          logger.debug { "  !!! [TEST] Sending sms via #{ad.adapter_key} to #{number}: #{message}" }
 
-      if adapter_key.nil?
-        raise CantSend, "No adapter key specified or none of the adapters can send."
-      end
-
-      unless testing?
-        adapter(adapter_key).send_sms(number, message, sender_id)
-      else
-        logger.debug { "  !!! [TEST] Sending sms to #{number}: #{message}" }
+          resp = [ true, "TESTING: Sent", nil ]
+        else
+          resp = ad.send_sms(number, message, sender_id)
+        end
       end
     end
 
     protected
 
+    def adapter_for_sending(number,
+                            message,
+                            sender_id = nil,
+                            adapter_keys = nil,
+                            &block)
+
+      adapter_keys = adapter_keys_for_sending(adapter_keys)
+
+      unless adapter_keys.empty?
+        resp = nil
+
+        adapter_keys.each do |ak|
+          ad = adapter(ak)
+          if ad.allowed_to_send?(number, message, sender_id)
+            if block_given?
+              resp = yield(ad)
+            else
+              resp = ad
+            end
+
+            break
+          end
+        end
+
+        if resp.nil?
+          raise CantSend, "None of the adapters are allowed to send to this number  #{number}"
+        end
+
+        resp
+      else
+        raise CantSend, "No adapter key specified or none of the adapters can send."
+      end
+    end
+
+    def adapter_keys_for_sending(adapter_keys = nil)
+      if adapter_keys.nil?
+        adapter_keys = @adapters_can_send
+      elsif !adapter_keys.is_a?(Array)
+        adapter_keys = Adapters.which_can_send([ adapter_keys ])
+      else
+        adapter_keys = Adapters.which_can_send(adapter_keys)
+      end
+    end
+
     def testing?
-      config.include?("testing") && config["testing"]
+      if defined?(@testing)
+        @testing
+      else
+        @testing = config.include?("testing") && config["testing"]
+      end
     end
 
     def controller_klass
@@ -98,8 +147,10 @@ module Palmade::Kanned
           end
 
           @adapters[adapter_key] = Palmade::Kanned::Adapters.create(self, adapter_key, adapter_options)
+          @adapter_keys.push(adapter_key)
         end
 
+        @adapters_can_send = Adapters.which_can_send(@adapter_keys)
       else
         raise ConfigError, "No adapters specified. Either no adapter set, or non-array, or empty"
       end

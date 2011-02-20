@@ -41,7 +41,7 @@ context "init" do
       @config['adapters'].should_not be_nil
       @config['adapters'].size.should == 4
       @config['adapters'].include?('smsbox').should be_true
-      ([ 'smsbox', 'twilio', 'mmsbox', 'dummy' ] - @config['adapters']).should be_empty
+      ([ 'smsbox', 'tropo', 'mmsbox', 'dummy' ] - @config['adapters']).should be_empty
 
       # config: smsbox
       @config.should include "smsbox"
@@ -52,8 +52,8 @@ context "init" do
       @config["mmsbox"].should_not be_nil
 
       # config: twilio
-      @config.should include "twilio"
-      @config["twilio"].should_not be_nil
+      @config.should include "tropo"
+      @config["tropo"].should_not be_nil
     end
 
     it "should have the correct url_prefix" do

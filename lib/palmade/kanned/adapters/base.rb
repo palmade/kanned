@@ -41,6 +41,10 @@ module Palmade::Kanned
         CKANNED_PATH_PARAMS => nil
       }
 
+      DEFAULT_ALLOWED_REGEX = /\A\+\d+\Z/i.freeze
+
+      attr_reader :adapter_key
+
       def self.create(gw, adapter_key, config = { })
         self.new(gw, adapter_key, config).build!
       end
@@ -48,10 +52,17 @@ module Palmade::Kanned
       def initialize(gw, adapter_key, config = { })
         @gateway = gw
         @adapter_key = adapter_key
+
         @config = config
       end
 
       def build!
+        if @config.include?(Callowed_regex)
+          @allowed_regex = Regexp.new(@config[Callowed_regex]).freeze
+        else
+          @allowed_regex = DEFAULT_ALLOWED_REGEX
+        end
+
         self
       end
 
@@ -65,6 +76,10 @@ module Palmade::Kanned
 
       def post_process(env, path_params, msg_hash, performed, response)
         [ performed, response ]
+      end
+
+      def allowed_to_send?(number, message, sender_id)
+        number =~ @allowed_regex
       end
 
       protected
