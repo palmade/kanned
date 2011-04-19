@@ -81,5 +81,6 @@ module Palmade::Kanned
     Cparameters = 'parameters'.freeze
     Ctrue = 'true'. freeze
     Callowed_regex = 'allowed_regex'.freeze
+    Cendpoint_url = 'endpoint_url'.freeze
   end
 end

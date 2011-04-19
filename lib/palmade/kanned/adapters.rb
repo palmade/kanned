@@ -8,8 +8,9 @@ module Palmade::Kanned
     autoload :Twilio, File.join(KANNED_LIB_DIR, 'kanned/adapters/twilio')
     autoload :Tropo, File.join(KANNED_LIB_DIR, 'kanned/adapters/tropo')
     autoload :Clickatell, File.join(KANNED_LIB_DIR, 'kanned/adapters/clickatell')
+    autoload :Globelabs, File.join(KANNED_LIB_DIR, 'kanned/adapters/globelabs')
 
-    CAN_SEND_ADAPTERS = [ "smsbox", "twilio", "tropo", "clickatell" ]
+    CAN_SEND_ADAPTERS = [ "smsbox", "twilio", "tropo", "clickatell", "globelabs" ]
 
     def self.which_can_send(keys)
       keys.collect { |k| CAN_SEND_ADAPTERS.include?(k.to_s) ? k : nil }.compact
@@ -29,6 +30,8 @@ module Palmade::Kanned
         Tropo.create(gw, adapter_key, adapter_config)
       when 'clickatell'
         Clickatell.create(gw, adapter_key, adapter_config)
+      when 'globelabs'
+        Globelabs.create(gw, adapter_key, adapter_config)
       else
         raise UnknownAdapter, "Unknown adapter #{adapter_key}"
       end

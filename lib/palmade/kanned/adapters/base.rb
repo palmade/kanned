@@ -87,6 +87,10 @@ module Palmade::Kanned
       def empty_message_hash(mtype = CSMS)
         { CMESSAGE_TYPE => mtype }.merge(DEFAULT_MESSAGE_HASH)
       end
+
+      def logger
+        @gateway.logger
+      end
     end
   end
 end

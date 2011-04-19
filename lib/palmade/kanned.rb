@@ -1,7 +1,8 @@
 require 'logger'
 require 'benchmark'
 
-KANNED_LIB_DIR = File.expand_path(File.dirname(__FILE__))
+KANNED_LIB_DIR = File.expand_path('..', __FILE__)
+KANNED_ROOT_DIR = File.expand_path('../../..', __FILE__)
 
 module Palmade
   module Kanned
@@ -32,6 +33,7 @@ module Palmade
     class HttpServiceRequired < KannedError; end
     class SendSmsFail < KannedError; end
     class InvalidRequest < KannedError; end
+    class UnsupportedRequest < KannedError; end
 
     def self.init; @@init; end
     def self.init=(i); @@init = i; end

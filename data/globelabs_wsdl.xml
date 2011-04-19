@@ -1,0 +1,264 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<wsdl:definitions xmlns:wsdl="http://schemas.xmlsoap.org/wsdl/" xmlns:axis2="http://ESCPlatform/" xmlns:ns1="http://org.apache.axis2/xsd" xmlns:wsaw="http://www.w3.org/2006/05/addressing/wsdl" xmlns:http="http://schemas.xmlsoap.org/wsdl/http/" xmlns:ns0="http://ESCPlatform/xsd" xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:soap="http://schemas.xmlsoap.org/wsdl/soap/" xmlns:mime="http://schemas.xmlsoap.org/wsdl/mime/" xmlns:soap12="http://schemas.xmlsoap.org/wsdl/soap12/" targetNamespace="http://ESCPlatform/">
+    <wsdl:documentation>Platform</wsdl:documentation>
+    <wsdl:types>
+        <xs:schema xmlns:ns="http://ESCPlatform/xsd" attributeFormDefault="qualified" elementFormDefault="qualified" targetNamespace="http://ESCPlatform/xsd">
+            <xs:element name="getConsent">
+                <xs:complexType>
+                    <xs:sequence>
+                        <xs:element minOccurs="0" name="apiType" nillable="true" type="xs:string"/>
+                        <xs:element minOccurs="0" name="uName" nillable="true" type="xs:string"/>
+                        <xs:element minOccurs="0" name="uPin" nillable="true" type="xs:string"/>
+                        <xs:element minOccurs="0" name="MSISDN" nillable="true" type="xs:string"/>
+                    </xs:sequence>
+                </xs:complexType>
+            </xs:element>
+            <xs:element name="getConsentResponse">
+                <xs:complexType>
+                    <xs:sequence>
+                        <xs:element name="ConsentReturn">
+                            <xs:complexType>
+                                <xs:sequence>
+                                    <xs:element minOccurs="0" name="return" nillable="true" type="xs:string"/>
+                                    <xs:element minOccurs="0" name="tranId" nillable="true" type="xs:string"/>
+                                </xs:sequence>
+                            </xs:complexType>
+                        </xs:element>
+                    </xs:sequence>
+                </xs:complexType>
+            </xs:element>
+            <xs:element name="getLoc">
+                <xs:complexType>
+                    <xs:sequence>
+                        <xs:element minOccurs="0" name="uName" nillable="true" type="xs:string"/>
+                        <xs:element minOccurs="0" name="uPin" nillable="true" type="xs:string"/>
+                        <xs:element minOccurs="0" name="MSISDN" nillable="true" type="xs:string"/>
+                    </xs:sequence>
+                </xs:complexType>
+            </xs:element>
+            <xs:element name="getLocResponse">
+                <xs:complexType>
+                    <xs:sequence>
+                        <xs:element name="LocationReturn">
+                            <xs:complexType>
+                                <xs:sequence>
+                                    <xs:element minOccurs="0" name="return" nillable="true" type="xs:string"/>
+                                    <xs:element minOccurs="0" name="tranId" nillable="true" type="xs:string"/>
+                                </xs:sequence>
+                            </xs:complexType>
+                        </xs:element>
+                    </xs:sequence>
+                </xs:complexType>
+            </xs:element>
+            <xs:element name="sendMMS">
+                <xs:complexType>
+                    <xs:sequence>
+                        <xs:element minOccurs="0" name="uName" nillable="true" type="xs:string"/>
+                        <xs:element minOccurs="0" name="uPin" nillable="true" type="xs:string"/>
+                        <xs:element minOccurs="0" name="MSISDN" nillable="true" type="xs:string"/>
+                        <xs:element minOccurs="0" name="subject" nillable="true" type="xs:string"/>
+                        <xs:element minOccurs="0" name="smil" nillable="true" type="xs:string"/>
+                    </xs:sequence>
+                </xs:complexType>
+            </xs:element>
+            <xs:element name="sendMMSResponse">
+                <xs:complexType>
+                    <xs:sequence>
+                        <xs:element minOccurs="0" name="return" nillable="true" type="xs:string"/>
+                    </xs:sequence>
+                </xs:complexType>
+            </xs:element>
+            <xs:element name="sendSMS">
+                <xs:complexType>
+                    <xs:sequence>
+                        <xs:element minOccurs="0" name="uName" nillable="true" type="xs:string"/>
+                        <xs:element minOccurs="0" name="uPin" nillable="true" type="xs:string"/>
+                        <xs:element minOccurs="0" name="MSISDN" nillable="true" type="xs:string"/>
+                        <xs:element minOccurs="0" name="messageString" nillable="true" type="xs:string"/>
+                        <xs:element minOccurs="0" name="Display" nillable="true" type="xs:string"/>
+                        <xs:element minOccurs="0" name="udh" nillable="true" type="xs:string"/>
+                        <xs:element minOccurs="0" name="mwi" nillable="true" type="xs:string"/>
+                        <xs:element minOccurs="0" name="coding" nillable="true" type="xs:string"/>
+                    </xs:sequence>
+                </xs:complexType>
+            </xs:element>
+            <xs:element name="sendSMSResponse">
+                <xs:complexType>
+                    <xs:sequence>
+                        <xs:element minOccurs="0" name="return" nillable="true" type="xs:string"/>
+                    </xs:sequence>
+                </xs:complexType>
+            </xs:element>
+        </xs:schema>
+    </wsdl:types>
+    <wsdl:message name="getLocRequest">
+        <wsdl:part name="parameters" element="ns0:getLoc"/>
+    </wsdl:message>
+    <wsdl:message name="getLocResponse">
+        <wsdl:part name="parameters" element="ns0:getLocResponse"/>
+    </wsdl:message>
+    <wsdl:message name="sendMMSRequest">
+        <wsdl:part name="parameters" element="ns0:sendMMS"/>
+    </wsdl:message>
+    <wsdl:message name="sendMMSResponse">
+        <wsdl:part name="parameters" element="ns0:sendMMSResponse"/>
+    </wsdl:message>
+    <wsdl:message name="sendSMSRequest">
+        <wsdl:part name="parameters" element="ns0:sendSMS"/>
+    </wsdl:message>
+    <wsdl:message name="sendSMSResponse">
+        <wsdl:part name="parameters" element="ns0:sendSMSResponse"/>
+    </wsdl:message>
+    <wsdl:message name="getConsentRequest">
+        <wsdl:part name="parameters" element="ns0:getConsent"/>
+    </wsdl:message>
+    <wsdl:message name="getConsentResponse">
+        <wsdl:part name="parameters" element="ns0:getConsentResponse"/>
+    </wsdl:message>
+    <wsdl:portType name="PlatformPortType">
+        <wsdl:operation name="getLoc">
+            <wsdl:input message="axis2:getLocRequest" wsaw:Action="urn:getLoc"/>
+            <wsdl:output message="axis2:getLocResponse" wsaw:Action="urn:getLocResponse"/>
+        </wsdl:operation>
+        <wsdl:operation name="sendMMS">
+            <wsdl:input message="axis2:sendMMSRequest" wsaw:Action="urn:sendMMS"/>
+            <wsdl:output message="axis2:sendMMSResponse" wsaw:Action="urn:sendMMSResponse"/>
+        </wsdl:operation>
+        <wsdl:operation name="sendSMS">
+            <wsdl:input message="axis2:sendSMSRequest" wsaw:Action="urn:sendSMS"/>
+            <wsdl:output message="axis2:sendSMSResponse" wsaw:Action="urn:sendSMSResponse"/>
+        </wsdl:operation>
+        <wsdl:operation name="getConsent">
+            <wsdl:input message="axis2:getConsentRequest" wsaw:Action="urn:getConsent"/>
+            <wsdl:output message="axis2:getConsentResponse" wsaw:Action="urn:getConsentResponse"/>
+        </wsdl:operation>
+    </wsdl:portType>
+    <wsdl:binding name="PlatformSOAP11Binding" type="axis2:PlatformPortType">
+        <soap:binding transport="http://schemas.xmlsoap.org/soap/http" style="document"/>
+        <wsdl:operation name="getLoc">
+            <soap:operation soapAction="urn:getLoc" style="document"/>
+            <wsdl:input>
+                <soap:body use="literal"/>
+            </wsdl:input>
+            <wsdl:output>
+                <soap:body use="literal"/>
+            </wsdl:output>
+        </wsdl:operation>
+        <wsdl:operation name="sendMMS">
+            <soap:operation soapAction="urn:sendMMS" style="document"/>
+            <wsdl:input>
+                <soap:body use="literal"/>
+            </wsdl:input>
+            <wsdl:output>
+                <soap:body use="literal"/>
+            </wsdl:output>
+        </wsdl:operation>
+        <wsdl:operation name="sendSMS">
+            <soap:operation soapAction="urn:sendSMS" style="document"/>
+            <wsdl:input>
+                <soap:body use="literal"/>
+            </wsdl:input>
+            <wsdl:output>
+                <soap:body use="literal"/>
+            </wsdl:output>
+        </wsdl:operation>
+        <wsdl:operation name="getConsent">
+            <soap:operation soapAction="urn:getConsent" style="document"/>
+            <wsdl:input>
+                <soap:body use="literal"/>
+            </wsdl:input>
+            <wsdl:output>
+                <soap:body use="literal"/>
+            </wsdl:output>
+        </wsdl:operation>
+    </wsdl:binding>
+    <wsdl:binding name="PlatformSOAP12Binding" type="axis2:PlatformPortType">
+        <soap12:binding transport="http://schemas.xmlsoap.org/soap/http" style="document"/>
+        <wsdl:operation name="getLoc">
+            <soap12:operation soapAction="urn:getLoc" style="document"/>
+            <wsdl:input>
+                <soap12:body use="literal"/>
+            </wsdl:input>
+            <wsdl:output>
+                <soap12:body use="literal"/>
+            </wsdl:output>
+        </wsdl:operation>
+        <wsdl:operation name="sendMMS">
+            <soap12:operation soapAction="urn:sendMMS" style="document"/>
+            <wsdl:input>
+                <soap12:body use="literal"/>
+            </wsdl:input>
+            <wsdl:output>
+                <soap12:body use="literal"/>
+            </wsdl:output>
+        </wsdl:operation>
+        <wsdl:operation name="sendSMS">
+            <soap12:operation soapAction="urn:sendSMS" style="document"/>
+            <wsdl:input>
+                <soap12:body use="literal"/>
+            </wsdl:input>
+            <wsdl:output>
+                <soap12:body use="literal"/>
+            </wsdl:output>
+        </wsdl:operation>
+        <wsdl:operation name="getConsent">
+            <soap12:operation soapAction="urn:getConsent" style="document"/>
+            <wsdl:input>
+                <soap12:body use="literal"/>
+            </wsdl:input>
+            <wsdl:output>
+                <soap12:body use="literal"/>
+            </wsdl:output>
+        </wsdl:operation>
+    </wsdl:binding>
+    <wsdl:binding name="PlatformHttpBinding" type="axis2:PlatformPortType">
+        <http:binding verb="POST"/>
+        <wsdl:operation name="getLoc">
+            <http:operation location="Platform/getLoc"/>
+            <wsdl:input>
+                <mime:content type="text/xml" part="getLoc"/>
+            </wsdl:input>
+            <wsdl:output>
+                <mime:content type="text/xml" part="getLoc"/>
+            </wsdl:output>
+        </wsdl:operation>
+        <wsdl:operation name="sendMMS">
+            <http:operation location="Platform/sendMMS"/>
+            <wsdl:input>
+                <mime:content type="text/xml" part="sendMMS"/>
+            </wsdl:input>
+            <wsdl:output>
+                <mime:content type="text/xml" part="sendMMS"/>
+            </wsdl:output>
+        </wsdl:operation>
+        <wsdl:operation name="sendSMS">
+            <http:operation location="Platform/sendSMS"/>
+            <wsdl:input>
+                <mime:content type="text/xml" part="sendSMS"/>
+            </wsdl:input>
+            <wsdl:output>
+                <mime:content type="text/xml" part="sendSMS"/>
+            </wsdl:output>
+        </wsdl:operation>
+        <wsdl:operation name="getConsent">
+            <http:operation location="Platform/getConsent"/>
+            <wsdl:input>
+                <mime:content type="text/xml" part="getConsent"/>
+            </wsdl:input>
+            <wsdl:output>
+                <mime:content type="text/xml" part="getConsent"/>
+            </wsdl:output>
+        </wsdl:operation>
+    </wsdl:binding>
+    <wsdl:service name="Platform">
+        <wsdl:port name="PlatformSOAP11port_http" binding="axis2:PlatformSOAP11Binding">
+            <soap:address location="http://iplaypen.globelabs.com.ph:1881/axis2/services/Platform"/>
+        </wsdl:port>
+        <wsdl:port name="PlatformSOAP12port_http" binding="axis2:PlatformSOAP12Binding">
+            <soap12:address location="http://iplaypen.globelabs.com.ph:1881/axis2/services/Platform"/>
+        </wsdl:port>
+        <wsdl:port name="PlatformHttpport" binding="axis2:PlatformHttpBinding">
+            <http:address location="http://iplaypen.globelabs.com.ph:1881/axis2/services/Platform"/>
+        </wsdl:port>
+    </wsdl:service>
+</wsdl:definitions>
