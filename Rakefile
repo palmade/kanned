@@ -17,8 +17,3 @@ Echoe.new("kanned") do |p|
 end
 
 gem 'rspec'
-require 'spec/rake/spectask'
-
-#Spec::Rake::SpecTask.new do |t|
-#  t.spec_opts.push("-f s")
-#end
