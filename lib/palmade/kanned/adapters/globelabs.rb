@@ -175,6 +175,7 @@ module Palmade::Kanned
       def send_sms(number, message, sender_id = nil)
         check_can_send!
 
+        number = normalize_number(number)
         send_sms_soap(number, message, sender_id)
       end
 
@@ -284,6 +285,14 @@ module Palmade::Kanned
         end
 
         si
+      end
+
+      def normalize_number(number)
+        if number =~ /(\+63|0)(\d+)/
+          "0%s" % $~[2]
+        else
+          number
+        end
       end
     end
   end
