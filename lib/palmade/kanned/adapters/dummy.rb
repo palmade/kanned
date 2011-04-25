@@ -106,22 +106,6 @@ SMSFORM
 </form>
 SMSFORM
       end
-
-      def reply_html(html)
-        body = <<HTML
-<html>
-<head>
-</head>
-<body>
-#{html}
-</body>
-</html>
-HTML
-
-        [ 200,
-          { CContentType => CCTtext_html },
-          [ body ] ]
-      end
     end
   end
 end

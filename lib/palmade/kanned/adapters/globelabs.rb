@@ -120,6 +120,9 @@ module Palmade::Kanned
       Cusername = 'username'.freeze
       Cpassword = 'password'.freeze
 
+      CSMS_NOTIFICATION = 'SMS-NOTIFICATION'.freeze
+      CGLOBELABS_MESSAGE_TYPE = 'GLOBELABS_MESSAGE_TYPE'.freeze
+
       # NOTE!!!
       # If you get into trouble, try updating this file
       # first, before doing anything else.
@@ -166,6 +169,13 @@ module Palmade::Kanned
                 logger.error { "#{e.class.name} #{e.message}\n#{e.backtrace.join("\n")}" }
               end
             end
+          end
+        else
+          case env[CGLOBELABS_MESSAGE_TYPE]
+          when CSMS_NOTIFICATION
+            response = reply_txt("Success")
+          else
+            # just ignore, move on with life.
           end
         end
 
@@ -222,44 +232,52 @@ module Palmade::Kanned
         si = parse_xml_input(bd.read.force_encoding(CEncUTF8))
         bd.rewind
 
-        case si['messagetype'].upcase
-        when CSMS
-          msg_hash = empty_message_hash(CSMS)
+        unless si['messagetype'].nil?
+          env[CGLOBELABS_MESSAGE_TYPE] = si['messagetype'].upcase.freeze
 
-          msg_hash[CMESSAGE_ID] = si['id'].freeze
+          case si['messagetype'].upcase
+          when CSMS
+            msg_hash = empty_message_hash(CSMS)
 
-          # let's try to normalize the sender number, if it's
-          # not in the format we expect it (ISOxx format)
-          #
-          if si['source'] =~ /\A0(\d+)\Z/
-            msg_hash[CSENDER_NUMBER] = "%s%s" % [ @config[Cnormalize_prefix], $~[1] ]
+            msg_hash[CMESSAGE_ID] = si['id'].freeze
+
+            # let's try to normalize the sender number, if it's
+            # not in the format we expect it (ISOxx format)
+            #
+            if si['source'] =~ /\A0(\d+)\Z/
+              msg_hash[CSENDER_NUMBER] = "%s%s" % [ @config[Cnormalize_prefix], $~[1] ]
+            else
+              msg_hash[CSENDER_NUMBER] = si['source']
+            end
+
+            msg_hash[CORIGINAL_SOURCE_NUMBER] = si['source']
+            msg_hash[CRECIPIENT_NUMBER] = si['target']
+
+            # e.g. /kanndee/globelabs/tweetitow/some_key
+            msg_hash[CRECIPIENT_ID] = path_params.split(/\//, 3)[1] || DEFAULT_RECIPIENT_ID
+
+            msg_hash[CRECEIVED_AT] = Time.now.utc.freeze
+
+            msg_hash[CMESSAGE] = si['msg']
+
+            msg_hash[CREMOTE_ADDR] = env[CREMOTE_ADDR].dup.freeze
+            msg_hash[CUSER_AGENT] = env[CHTTP_USER_AGENT].dup.freeze
+            msg_hash[CREQUESTED_AT] = Time.now.utc.freeze
+            msg_hash[CQUERY_STRING] = env[CQUERY_STRING].dup.freeze
+
+            msg_hash[CKANNED_GATEWAY_PATH] = env[CKANNED_GATEWAY_PATH]
+            msg_hash[CKANNED_GATEWAY_KEY] = env[CKANNED_GATEWAY_KEY]
+            msg_hash[CKANNED_ADAPTER_KEY] = env[CKANNED_ADAPTER_KEY]
+            msg_hash[CKANNED_PATH_PARAMS] = env[CKANNED_PATH_PARAMS]
+          when CMMS
+            raise UnsupportedError, "MMS message type not yet implemented"
+          when CSMS_NOTIFICATION
+            logger.info { "!!! Got GlobeLabs notification. Params: #{si.inspect}" }
           else
-            msg_hash[CSENDER_NUMBER] = si['source']
+            raise InvalidRequest, "Don't know how to parse message type #{si['messagetype']}"
           end
-
-          msg_hash[CORIGINAL_SOURCE_NUMBER] = si['source']
-          msg_hash[CRECIPIENT_NUMBER] = si['target']
-
-          # e.g. /kanndee/globelabs/tweetitow/some_key
-          msg_hash[CRECIPIENT_ID] = path_params.split(/\//, 3)[1] || DEFAULT_RECIPIENT_ID
-
-          msg_hash[CRECEIVED_AT] = Time.now.utc.freeze
-
-          msg_hash[CMESSAGE] = si['msg']
-
-          msg_hash[CREMOTE_ADDR] = env[CREMOTE_ADDR].dup.freeze
-          msg_hash[CUSER_AGENT] = env[CHTTP_USER_AGENT].dup.freeze
-          msg_hash[CREQUESTED_AT] = Time.now.utc.freeze
-          msg_hash[CQUERY_STRING] = env[CQUERY_STRING].dup.freeze
-
-          msg_hash[CKANNED_GATEWAY_PATH] = env[CKANNED_GATEWAY_PATH]
-          msg_hash[CKANNED_GATEWAY_KEY] = env[CKANNED_GATEWAY_KEY]
-          msg_hash[CKANNED_ADAPTER_KEY] = env[CKANNED_ADAPTER_KEY]
-          msg_hash[CKANNED_PATH_PARAMS] = env[CKANNED_PATH_PARAMS]
-        when CMMS
-          raise UnsupportedError, "MMS message type not yet implemented"
         else
-          raise InvalidRequest, "Don't know how to parse message type #{si['messagetype']} DEBUG: #{si.inspect}"
+          env[CGLOBELABS_MESSAGE_TYPE] = nil
         end
 
         [ msg_hash, env, path_params ]

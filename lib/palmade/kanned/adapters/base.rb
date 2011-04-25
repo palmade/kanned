@@ -84,6 +84,30 @@ module Palmade::Kanned
 
       protected
 
+      def reply_txt(txt)
+        body = txt.dup
+
+        [ 200,
+          { CContentType => CCTtext_plain },
+          [ body ] ]
+      end
+
+      def reply_html(html)
+        body = <<HTML
+<html>
+<head>
+</head>
+<body>
+#{html}
+</body>
+</html>
+HTML
+
+        [ 200,
+          { CContentType => CCTtext_html },
+          [ body ] ]
+      end
+
       def empty_message_hash(mtype = CSMS)
         { CMESSAGE_TYPE => mtype }.merge(DEFAULT_MESSAGE_HASH)
       end
