@@ -259,7 +259,7 @@ module Palmade::Kanned
         when CMMS
           raise UnsupportedError, "MMS message type not yet implemented"
         else
-          raise InvalidRequest, "Don't know how to parse message type #{si['messagetype']}"
+          raise InvalidRequest, "Don't know how to parse message type #{si['messagetype']} DEBUG: #{si.inspect}"
         end
 
         [ msg_hash, env, path_params ]
