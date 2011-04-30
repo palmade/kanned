@@ -47,7 +47,7 @@ module Palmade::Kanned
       before_filter
 
       # process commands and shortcodes
-      unless performed?
+      unless performed? || @message.mms?
         catch(:performed) do
           perform_commands_and_shortcodes
         end

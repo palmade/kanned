@@ -108,6 +108,8 @@ module Palmade::Kanned
       tm = Time.now.strftime(Clogtimestamp)
       request = Rack::Request.new(env)
 
+      mt = msg_hash[CMESSAGE_TYPE]
+
       unless msg_hash[CMESSAGE].nil?
         message = msg_hash[CMESSAGE][0,70].
           split(Clognewlineregex).join(Clognewlinespacing)
@@ -120,6 +122,7 @@ module Palmade::Kanned
                             request.path,
                             request.ip,
                             tm,
+                            mt,
                             msg_hash[CSENDER_NUMBER],
                             msg_hash[CRECIPIENT_NUMBER],
                             msg_hash[CRECIPIENT_ID],

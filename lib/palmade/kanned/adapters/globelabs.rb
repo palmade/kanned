@@ -55,10 +55,29 @@ ine::DefaultDeferrable:0x00000104222c98>,
  "source"=>"09176327037",
  "msg"=>"Testing 5",
  "udh"=>""}
+
+
+==== MMS XML
+
+"<?xml version=\"1.0\" encoding=\"utf-8\"?><message><param><name>messageType</name><value>MMS</value></param><param><name>subject</name><value>7033</value></param><param><name>source</name><value>+639176327037</value></param><param><name>target</name><value>2373</value></param><param><name>file</name><value><file>http://202.126.34.117:1883/platform/20110430223040IMG00027-20110430-2217.jpg</file><file>http://202.126.34.117:1883/platform/201104302230401304173009829.txt</file><file>http://202.126.34.117:1883/platform/20110430223040mmm.smil</file></value></param></message>"
+
+
+==== MI
+
+{"messagetype"=>"MMS",
+ "subject"=>"7033",
+ "source"=>"+639176327037",
+ "target"=>"2373",
+ "file"=>
+  ["http://202.126.34.117:1883/platform/20110430223040IMG00027-20110430-2217.jpg",
+   "http://202.126.34.117:1883/platform/201104302230401304173009829.txt",
+   "http://202.126.34.117:1883/platform/20110430223040mmm.smil"]}
+
 =end
 
 require 'nokogiri'
 require 'handsoap'
+require 'uri'
 
 module Palmade::Kanned
   module Adapters
@@ -163,9 +182,12 @@ module Palmade::Kanned
                 # done asynchronously. as it might affect receiving of
                 # messages.
                 #
-                send_sms(to, msg)
+                resp = send_sms(to, msg)
+                unless resp[0]
+                  logger.error { "  !!! Sending failed to #{to} with error #{resp[1]}" }
+                end
               rescue Exception => e
-                logger.warn { "  Cant send response to #{to}: #{msg}" }
+                logger.error { "  Cant send response to #{to}" }
                 logger.error { "#{e.class.name} #{e.message}\n#{e.backtrace.join("\n")}" }
               end
             end
@@ -229,36 +251,47 @@ module Palmade::Kanned
 
         bd = env[Crack_input]
         bd.rewind
-        si = parse_xml_input(bd.read.force_encoding(CEncUTF8))
+
+        xml_txt = bd.read.force_encoding(CEncUTF8)
+        mi = parse_xml_input(xml_txt)
         bd.rewind
 
-        unless si['messagetype'].nil?
-          env[CGLOBELABS_MESSAGE_TYPE] = si['messagetype'].upcase.freeze
+        unless mi['messagetype'].nil?
+          env[CGLOBELABS_MESSAGE_TYPE] = mi['messagetype'].upcase.freeze
 
-          case si['messagetype'].upcase
-          when CSMS
-            msg_hash = empty_message_hash(CSMS)
+          case mt = mi['messagetype'].upcase
+          when CSMS, CMMS
+            msg_hash = empty_message_hash(mt)
 
-            msg_hash[CMESSAGE_ID] = si['id'].freeze
+            msg_hash[CMESSAGE_ID] = mi['id'].freeze
 
             # let's try to normalize the sender number, if it's
             # not in the format we expect it (ISOxx format)
             #
-            if si['source'] =~ /\A0(\d+)\Z/
-              msg_hash[CSENDER_NUMBER] = "%s%s" % [ @config[Cnormalize_prefix], $~[1] ]
+            if mi['source'] =~ /\A0(\d+)\Z/
+              msg_hash[CSENDER_NUMBER] = ("%s%s" % [ @config[Cnormalize_prefix], $~[1] ]).freeze
             else
-              msg_hash[CSENDER_NUMBER] = si['source']
+              msg_hash[CSENDER_NUMBER] = mi['source'].freeze
             end
 
-            msg_hash[CORIGINAL_SOURCE_NUMBER] = si['source']
-            msg_hash[CRECIPIENT_NUMBER] = si['target']
+            msg_hash[CORIGINAL_SOURCE_NUMBER] = mi['source'].freeze
+            msg_hash[CRECIPIENT_NUMBER] = mi['target'].freeze
 
             # e.g. /kanndee/globelabs/tweetitow/some_key
-            msg_hash[CRECIPIENT_ID] = path_params.split(/\//, 3)[1] || DEFAULT_RECIPIENT_ID
+            msg_hash[CRECIPIENT_ID] = (path_params.split(/\//, 3)[1] || DEFAULT_RECIPIENT_ID).freeze
 
             msg_hash[CRECEIVED_AT] = Time.now.utc.freeze
 
-            msg_hash[CMESSAGE] = si['msg']
+            case mt
+            when CSMS
+              msg_hash[CMESSAGE] = mi['msg'].freeze
+            when CMMS
+              # message is nil, here since we still have to fetch it
+              # from GlobeLabs server.
+              msg_hash[CMESSAGE] = nil
+              msg_hash[CSUBJECT] = mi['subject'].freeze
+              msg_hash[CATTACHMENTS] = mi['file'].collect { |f| URI.parse(f) }.freeze
+            end
 
             msg_hash[CREMOTE_ADDR] = env[CREMOTE_ADDR].dup.freeze
             msg_hash[CUSER_AGENT] = env[CHTTP_USER_AGENT].dup.freeze
@@ -269,12 +302,10 @@ module Palmade::Kanned
             msg_hash[CKANNED_GATEWAY_KEY] = env[CKANNED_GATEWAY_KEY]
             msg_hash[CKANNED_ADAPTER_KEY] = env[CKANNED_ADAPTER_KEY]
             msg_hash[CKANNED_PATH_PARAMS] = env[CKANNED_PATH_PARAMS]
-          when CMMS
-            raise UnsupportedError, "MMS message type not yet implemented"
           when CSMS_NOTIFICATION
-            logger.info { "!!! Got GlobeLabs notification. Params: #{si.inspect}" }
+            logger.info { "!!! Got GlobeLabs notification. Params: #{mi.inspect}" }
           else
-            raise InvalidRequest, "Don't know how to parse message type #{si['messagetype']}"
+            raise InvalidRequest, "Don't know how to parse message type #{mi['messagetype']}"
           end
         else
           env[CGLOBELABS_MESSAGE_TYPE] = nil
@@ -294,15 +325,23 @@ module Palmade::Kanned
       end
 
       def parse_xml_input(xml_txt)
-        si = { }
+        mi = { }
 
         doc = Nokogiri::XML(xml_txt)
         doc.xpath('//message/param').each do |p|
-          si[p.xpath('name').first.content.downcase] =
-            p.xpath('value').first.content
+          pname = p.xpath('name').first.content.downcase
+
+          if (fs = p.xpath('value/file')).empty?
+            mi[pname] = p.xpath('value').first.content
+          else
+            mi[pname] = [ ]
+            fs.each do |f|
+              mi[pname].push(f.content)
+            end
+          end
         end
 
-        si
+        mi
       end
 
       def normalize_number(number)

@@ -69,7 +69,7 @@ module Palmade::Kanned
 
     Clogtimestamp = "%Y-%m-%d %H:%M:%S".freeze
     Clogprocessingformat = ("\n\nProcessing %s %s (for %s at %s)\n" +
-                            "  SMS from %s to %s %s\n" +
+                            "  %s from %s to %s %s\n" +
                             "    %s").freeze
     Clogcompletedformat =  ("Completed in %.5f (%s reqs/sec) | %s [ %s %s ]").freeze
 
