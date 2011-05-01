@@ -18,6 +18,7 @@ module Palmade
     autoload :Gateway, File.join(KANNED_LIB_DIR, 'kanned/gateway')
     autoload :Controller, File.join(KANNED_LIB_DIR, 'kanned/controller')
     autoload :Message, File.join(KANNED_LIB_DIR, 'kanned/message')
+    autoload :MessageAttachment, File.join(KANNED_LIB_DIR, 'kanned/message_attachment')
     autoload :Texter, File.join(KANNED_LIB_DIR, 'kanned/texter')
 
     autoload :Http, File.join(KANNED_LIB_DIR, 'kanned/http')

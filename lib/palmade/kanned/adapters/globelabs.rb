@@ -286,11 +286,9 @@ module Palmade::Kanned
             when CSMS
               msg_hash[CMESSAGE] = mi['msg'].freeze
             when CMMS
-              # message is nil, here since we still have to fetch it
-              # from GlobeLabs server.
-              msg_hash[CMESSAGE] = nil
               msg_hash[CSUBJECT] = mi['subject'].freeze
-              msg_hash[CATTACHMENTS] = mi['file'].collect { |f| URI.parse(f) }.freeze
+
+              fetch_attachments(msg_hash, mi)
             end
 
             msg_hash[CREMOTE_ADDR] = env[CREMOTE_ADDR].dup.freeze
@@ -312,6 +310,63 @@ module Palmade::Kanned
         end
 
         [ msg_hash, env, path_params ]
+      end
+
+      def fetch_attachments(msg_hash, mi)
+        msg_hash[CATTACHMENTS] = [ ]
+
+        # try to get the smil file, if it exists, parse it, and
+        # read the files based from there. if not, only parse the
+        # txt file.
+        #
+        mi['file'].each do |furl|
+          url = URI.parse(furl)
+          path = url.path
+
+          # Strip out the prefixed dates. This can change, so beware
+          # e.g. 20110430223040IMG00027-20110430-2217.jpg
+          fname = File.basename(path)[14..-1]
+          # fallback to full fname, if slice returns empty
+          fname = File.basename(path) if fname.nil? || fname.empty?
+
+          ext = File.extname(fname)
+          ext = ext[1..-1] unless ext.nil?
+
+          case ext
+          when 'txt'
+            resp = http.get(url.to_s)
+            if resp.success?
+              msg_hash[CMESSAGE] = resp.read.force_encoding(CEncUTF8).freeze
+
+              # sometimes, the message id param of an MMS message is empty.
+              # let's try to fill-it in here, using the sender number, and the
+              # timestamp found on the filename of the attached files.
+              #
+              if msg_hash[CMESSAGE_ID].nil?
+                sender = msg_hash[CSENDER_NUMBER][1..-1]
+                timestamp = File.basename(path)[0...14]
+
+                msg_hash[CMESSAGE_ID] = "%s-%s" % [ sender, timestamp ]
+              end
+            else
+              resp.raise_http_error
+            end
+          else
+            tempfile = create_tempfile
+            resp = http.get(url.to_s, tempfile)
+            if resp.success?
+              attach = MessageAttachment.new(tempfile,
+                                             :original_filename => fname,
+                                             :size => tempfile.size)
+
+              msg_hash[CATTACHMENTS].push(attach)
+            else
+              resp.raise_http_error
+            end
+          end
+
+          msg_hash[CATTACHMENTS]
+        end
       end
 
       def validate_request!(env, path_params)

@@ -59,11 +59,6 @@ module Palmade::Kanned
           [ false, resp ]
         end
       end
-
-      def http
-        Palmade::Kanned::Http
-      end
-
     end
   end
 end

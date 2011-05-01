@@ -181,10 +181,6 @@ module Palmade::Kanned
         end
       end
 
-      def http
-        Palmade::Kanned::Http
-      end
-
       def validate_request!(env, path_params)
         [ CHTTP_X_KANNEL_FROM,
           CHTTP_X_KANNEL_TO,

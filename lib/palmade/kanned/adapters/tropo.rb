@@ -298,10 +298,6 @@ module Palmade::Kanned
           },
           [ @json_encoder.encode(tro) ] ]
       end
-
-      def http
-        Palmade::Kanned::Http
-      end
     end
   end
 end

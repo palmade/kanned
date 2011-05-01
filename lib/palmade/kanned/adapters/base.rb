@@ -1,5 +1,7 @@
 # -*- encoding: binary -*-
 
+require 'tempfile'
+
 module Palmade::Kanned
   module Adapters
     class Base
@@ -42,6 +44,8 @@ module Palmade::Kanned
       }
 
       DEFAULT_ALLOWED_REGEX = /\A\+\d+\Z/i.freeze
+
+      TEMPFILE_PREFIX = 'KANNED-ATTACHMENTS'.freeze
 
       attr_reader :adapter_key
 
@@ -114,6 +118,17 @@ HTML
 
       def logger
         @gateway.logger
+      end
+
+      def http
+        Palmade::Kanned::Http
+      end
+
+      def create_tempfile
+        tempfile = Tempfile.new(TEMPFILE_PREFIX)
+        tempfile.set_encoding(Encoding::BINARY) if @tempfile.respond_to?(:set_encoding)
+        tempfile.binmode
+        tempfile
       end
     end
   end

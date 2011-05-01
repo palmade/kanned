@@ -72,6 +72,11 @@ require 'rack/request'
 #            ]
 # }
 
+
+# WARNING: This has not been properly tested, nor deployed on production.
+# So double-check and test before using in real world.
+#
+
 module Palmade::Kanned
   module Adapters
     class Mmsbox < Base
