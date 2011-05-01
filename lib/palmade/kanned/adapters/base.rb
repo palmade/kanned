@@ -13,7 +13,6 @@ module Palmade::Kanned
 
       # == SAMPLE MESSAGE hash after being parsed by an adapter
       DEFAULT_MESSAGE_HASH = {
-        CMESSAGE_TYPE => nil,
         CMESSAGE_ID => nil,
 
         # == Message details
@@ -113,7 +112,7 @@ HTML
       end
 
       def empty_message_hash(mtype = CSMS)
-        { CMESSAGE_TYPE => mtype }.merge(DEFAULT_MESSAGE_HASH)
+        DEFAULT_MESSAGE_HASH.merge({ CMESSAGE_TYPE => mtype })
       end
 
       def logger

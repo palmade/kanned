@@ -45,7 +45,7 @@ module Palmade::Kanned
         when Array
           v = v.collect { |n| n.dup }
         when Hash
-          v = v.inject({ }) { |h, d| h[d[0].dup.freeze] = d[1].dup; h }
+          v = v.inject({ }) { |h, d| h[d[0].dup.freeze] = d[1]; h }
         when TrueClass, FalseClass
           v = v
         else

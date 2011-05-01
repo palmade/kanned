@@ -47,7 +47,7 @@ module Palmade::Kanned
           message = req.params['message']
 
           unless sender_number.nil? || sender_number.empty?
-            msg_hash = empty_message_hash
+            msg_hash = empty_message_hash(CSMS)
 
             msg_hash[CSENDER_NUMBER] = sender_number.dup.freeze
             unless message.nil?

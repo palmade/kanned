@@ -127,10 +127,12 @@ module Palmade::Kanned
 
       Cnormalize_prefix = 'normalize_prefix'.freeze
       Cpath_key = 'path_key'.freeze
+      Cignore_subject = 'ignore_subject'.freeze
 
       DEFAULT_CONFIG = {
         Cnormalize_prefix => '+63',
-        Cpath_key => nil
+        Cpath_key => nil,
+        Cignore_subject => false
       }
 
       DEFAULT_RECIPIENT_ID = 'globelabs'.freeze
@@ -286,7 +288,9 @@ module Palmade::Kanned
             when CSMS
               msg_hash[CMESSAGE] = mi['msg'].freeze
             when CMMS
-              msg_hash[CSUBJECT] = mi['subject'].freeze
+              unless @config[Cignore_subject]
+                msg_hash[CSUBJECT] = mi['subject'].freeze
+              end
 
               fetch_attachments(msg_hash, mi)
             end
