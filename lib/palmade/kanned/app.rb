@@ -26,6 +26,8 @@ module Palmade::Kanned
       performed, response = call_gateways(env)
       if performed
         response
+      elsif [ '', '/' ].include?(env[CPATH_INFO])
+        healthy!
       else
         fail!
       end
@@ -147,6 +149,10 @@ module Palmade::Kanned
 
         @gw_routes.push [ url_prefix, url_prefix_regex, gw_key ]
       end
+    end
+
+    def healthy!
+      [ 200, { CContentType => CCTtext_plain }, [ CHealthyWhale ] ]
     end
 
     def fail!

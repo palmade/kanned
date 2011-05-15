@@ -65,6 +65,7 @@ module Palmade::Kanned
     CEncBINARY = Encoding.find('BINARY')
 
     CFailWhale = "Fail Whale".encode('UTF-8').freeze
+    CHealthyWhale = "Im alive".encode('UTF-8').freeze
     CEmptyBody = "".encode('UTF-8').freeze
 
     Clogtimestamp = "%Y-%m-%d %H:%M:%S".freeze
